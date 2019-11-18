@@ -1,0 +1,24 @@
+{
+	"always_show_minimap_viewport": true,
+	"auto_complete_commit_on_tab": true,
+	"fade_fold_buttons": false,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"indent_guide_options":
+	[
+		"draw_normal",
+		"draw_active"
+	],
+	"remember_full_screen": true,
+	"rulers":
+	[
+		80
+	],
+	"shift_tab_unindent": true,
+	"translate_tabs_to_spaces": true,
+	"trim_trailing_white_space_on_save": true,
+	"scroll_past_end": true
+
+}
