@@ -1,0 +1,8 @@
+{
+  "NotebookApp": {
+    "password": "sha1:6a5160a98d0b:42c45c9ded446bc28d74f01a6785e7b56c1f540c",
+    "port": 8620,
+    "ip": "0.0.0.0",
+    "open_browser": false
+  }
+}
