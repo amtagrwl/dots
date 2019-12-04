@@ -1,11 +1,23 @@
 - clean: ['~']
 
 - link:
-    ~/.profile: profile
-    ~/.bash_profile: bash_profile
-    ~/.bashrc: bashrc
-    ~/.bash_logout: bash_logout
-    ~/.bash_aliases: bash_aliases
-    ~/.tmux.conf: tmux.conf
+    ~/.profile:
+      force: true
+      path: profile
+    ~/.bash_profile:
+      force: true
+      path: bash_profile
+    ~/.bashrc: 
+      force: true
+      path: bashrc
+    ~/.bash_logout:
+      force: true
+      path: bash_logout
+    ~/.bash_aliases: 
+      force: true
+      path: bash_aliases
+    ~/.tmux.conf: 
+      force: true
+      path: tmux.conf
 
 
