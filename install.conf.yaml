@@ -1,5 +1,12 @@
 - clean: ['~']
 
+- shell:
+  -
+    command: chmod +x tmux_local_install.sh && ./tmux_local_install.sh
+    description: Installing tmux locally.
+    quiet: false
+    stdout: true
+
 - link:
     ~/.profile:
       force: true
@@ -19,5 +26,4 @@
     ~/.tmux.conf: 
       force: true
       path: tmux.conf
-
 
