@@ -2,16 +2,6 @@
 
 - shell:
     -
-        command: "if [ ! -r \"$(command -v aptitude)\" ]; then sudo apt-get install aptitude; fi"
-        description: Installing aptitude...
-        stdout: true
-        quiet: false
-    -
-        command: "if [ ! -r \"$(command -v wget)\" ]; then sudo apt-get install wget; fi"
-        description: Installing wget...
-        stdout: true
-        quiet: false
-    -
         command: "if [ ! -r \"$(command -v tmux)\" ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
         description: Installing tmux locally...
         stdout: true
