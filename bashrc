@@ -5,7 +5,7 @@ export PATH=/usr/local/bin:$PATH
 export SVN_EDITOR=nano
 
 # Use autocd if bash version is > 4.0 
-if [ $(BASH_VERSINFO[0]) -ge 4 ]; then 
+if [ $(bash -c 'echo $BASH_VERSINFO') -ge 4 ]; then 
     shopt -s autocd
 fi
 
