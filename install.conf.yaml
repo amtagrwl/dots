@@ -1,11 +1,11 @@
 - clean: ['~']
 
 - shell:
-    -
-        command: "if [ ! -r \"$(command -v tmux)\" ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
-        description: Installing tmux locally...
-        stdout: true
-        quiet: false
+    # -
+    #     command: "if [ ! -r \"$(command -v tmux)\" ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
+    #     description: Installing tmux locally...
+    #     stdout: true
+    #     quiet: false
     -
         command: "if [ ! -r \"$(command -v tmux)\" ]; then git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm; fi"
         description: Installing tpm...
