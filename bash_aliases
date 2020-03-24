@@ -3,10 +3,10 @@ alias watch='watch '
 alias sudo='sudo '
 
 # ls aliases
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [ $(bash -c 'echo $OSTYPE') = "linux-gnu" ]; then
         # ubuntu
 	alias ls='ls -p --color=auto'
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [ $(bash -c 'echo $OSTYPE') = "darwin"* ]; then
         # Mac OSX
 	alias ls='ls -p'
 fi
