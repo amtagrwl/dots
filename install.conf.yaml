@@ -2,17 +2,17 @@
 
 - shell:
     -
-        command: "if [ ! -r $(command -v tmux) ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
+        command: "if [ ! -r \"$(command -v tmux)\" ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
         description: Installing tmux locally...
         quiet: true
         stdout: true
     -
-        command: "if [ ! -r $(command -v tmux) ]; then git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm; fi"
+        command: "if [ ! -r \"$(command -v tmux)\" ]; then git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm; fi"
         description: Installing tpm...
         stdout: true
         quiet: true
     - 
-        command: "if [ ! -r $(command -v pip) ]; then curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py; fi" 
+        command: "if [ ! -r \"$(command -v pip)\" ]; then curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py; fi" 
         description: Installing pip...
         stdout: true
         quiet: false
@@ -22,7 +22,7 @@
         stdout: true
         quiet: false
     - 
-        command: "if [ ! -r $(command -v jupyter) ]; then pip install jupyter; fi"
+        command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip install jupyter; fi"
         description: Installing jupyter...
         stdout: true
         quiet: false
