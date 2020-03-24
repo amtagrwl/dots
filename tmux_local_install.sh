@@ -31,7 +31,7 @@ echo "Installing libevent..."
 tar xvzf libevent-2.1.11-stable.tar.gz
 cd libevent-2.1.11-stable
 ./configure --prefix=$HOME/local --disable-shared
-make
+make -j$(nproc)
 make install
 cd ..
 
@@ -42,7 +42,7 @@ echo "Installing ncurses..."
 tar xvzf ncurses-6.2.tar.gz
 cd ncurses-6.2
 ./configure --prefix=$HOME/local
-make
+make -j$(nproc)
 make install
 cd ..
 
@@ -53,7 +53,7 @@ echo "Installing tmux..."
 tar xvzf tmux-${TMUX_VERSION}.tar.gz
 cd tmux-${TMUX_VERSION}
 ./configure CFLAGS="-I$HOME/local/include -I$HOME/local/include/ncurses" LDFLAGS="-L$HOME/local/lib -L$HOME/local/include/ncurses -L$HOME/local/include"
-CPPFLAGS="-I$HOME/local/include -I$HOME/local/include/ncurses" LDFLAGS="-static -L$HOME/local/include -L$HOME/local/include/ncurses -L$HOME/local/lib" make
+CPPFLAGS="-I$HOME/local/include -I$HOME/local/include/ncurses" LDFLAGS="-static -L$HOME/local/include -L$HOME/local/include/ncurses -L$HOME/local/lib" make -j$(nproc)
 cp tmux $HOME/local/bin
 cd ..
 
