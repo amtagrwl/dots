@@ -1,7 +1,9 @@
 # Runs only with login shell (Most uses)
 
 # Run .bashrc file if found 
-[ -r ~/.bashrc ] && . ~/.bashrc
+if [ -r ~/.bashrc ]; then
+    . ~/.bashrc
+fi
 
 # set PATH so it includes user's private bin directories
 if [ -d "$HOME/bin" ] ; then

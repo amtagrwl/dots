@@ -5,7 +5,11 @@ export PATH=/usr/local/bin:$PATH
 export SVN_EDITOR=nano
 
 # Use autocd if bash version is > 4.0 
-[ ${BASH_VERSINFO[0]} -ge 4 ] && shopt -s autocd
+if [ ${BASH_VERSINFO[0]} -ge 4 ]; then 
+    shopt -s autocd
+fi
 
 # Run .bash_aliases file if found 
-[ -r ~/.bash_aliases ] && . ~/.bash_aliases
+if [ -r ~/.bash_aliases ]; then 
+    . ~/.bash_aliases;
+fi
