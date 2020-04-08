@@ -17,12 +17,12 @@
         stdout: true
         quiet: false
     - 
-        command: "if [ -r \"$(command -v pip)\" ]; then pip install --upgrade pip ; fi"
+        command: "if [ -r \"$(command -v pip)\" ]; then pip install --upgrade --user pip; fi"
         description: Upgrading pip...
         stdout: true
         quiet: false
     - 
-        command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip install jupyter; fi"
+        command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip install --user jupyter; fi"
         description: Installing jupyter...
         stdout: true
         quiet: false
