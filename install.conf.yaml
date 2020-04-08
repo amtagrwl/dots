@@ -17,7 +17,7 @@
         stdout: true
         quiet: false
     - 
-        command: "pip install --upgrade pip"
+        command: "if [ -r \"$(command -v pip)\" ]; then pip install --upgrade pip" ; fi"
         description: Upgrading pip...
         stdout: true
         quiet: false
