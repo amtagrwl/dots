@@ -3,12 +3,12 @@ alias watch='watch '
 alias sudo='sudo '
 
 # ls aliases
-if [ $(bash -c 'echo $OSTYPE') = "linux-gnu" ]; then
-        # ubuntu
-	alias ls='ls -p --color=auto'
-elif [ $(bash -c 'echo $OSTYPE') = "darwin"* ]; then
+if [ "$(uname)" == "Darwin" ]; then
         # Mac OSX
 	alias ls='ls -p'
+else
+        # ubuntu
+	alias ls='ls -p --color=auto'
 fi
 alias ll='ls -la -h'
 alias l.='ls -ld .*'
@@ -46,5 +46,5 @@ function mkcd {
 }
 
 # mount exx2
-alias mnt_exx2='sshfs -o allow_other,defer_permissions,IdentityFile=~/.ssh/id_rsa aagarwal@exx2:/ /Users/aagarwal/Desktop/u101478_fs'
-alias umnt_exx2='umount /Users/aagarwal/Desktop/u101478_fs'
+# alias mnt_exx2='sshfs -o allow_other,defer_permissions,IdentityFile=~/.ssh/id_rsa aagarwal@exx2:/ /Users/aagarwal/Desktop/u101478_fs'
+# alias umnt_exx2='umount /Users/aagarwal/Desktop/u101478_fs'
