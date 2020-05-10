@@ -59,8 +59,8 @@
     #     stdout: true
     #     quiet: false
 
-- link:
-    ~/.jupyter/jupyter_notebook_config.json:
-        force: true
-        path: jupyter_notebook_config.json
+# - link:
+#     ~/.jupyter/jupyter_notebook_config.json:
+#         force: true
+#         path: jupyter_notebook_config.json
         
