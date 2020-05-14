@@ -16,13 +16,13 @@
         quiet: false
 
 - shell:
+    # -
+    #     command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
+    #     description: Sourcing...
+    #     stdout: true
+    #     quiet: false
     -
-        command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
-        description: Sourcing...
-        stdout: true
-        quiet: false
-    -
-        command: "jupyter notebook -y --generate-config"
+        command: ". ~/.bash_profile && jupyter notebook -y --generate-config"
         description: Configuring jupyter...
         stdout: true
         quiet: false
