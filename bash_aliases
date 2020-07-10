@@ -44,7 +44,3 @@ function mkcd {
         mkdir $1 && cd $1
     fi
 }
-
-# mount exx2
-# alias mnt_exx2='sshfs -o allow_other,defer_permissions,IdentityFile=~/.ssh/id_rsa aagarwal@exx2:/ /Users/aagarwal/Desktop/u101478_fs'
-# alias umnt_exx2='umount /Users/aagarwal/Desktop/u101478_fs'
