@@ -18,7 +18,7 @@ alias cd..='cd ..'
 alias cd-='cd -'
 alias ..='cd ..'
 
-# grep aliases 
+# grep aliases
 alias grep='grep --color=auto'
 alias grepi='grep -i'
 alias histgrep='history | grepi'
@@ -34,7 +34,7 @@ else
     alias wget='wget -c'
 fi
 
-# mkdir && cd function alias 
+# mkdir && cd function alias
 function mkcd {
     if [ ! -n "$1" ]; then
         echo "Enter a directory name"
@@ -44,7 +44,3 @@ function mkcd {
         mkdir $1 && cd $1
     fi
 }
-
-# mount exx2
-# alias mnt_exx2='sshfs -o allow_other,defer_permissions,IdentityFile=~/.ssh/id_rsa aagarwal@exx2:/ /Users/aagarwal/Desktop/u101478_fs'
-# alias umnt_exx2='umount /Users/aagarwal/Desktop/u101478_fs'
