@@ -21,11 +21,11 @@
         description: Upgrading pip3...
         stdout: true
         quiet: false
-    - 
-        command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip3 install --user jupyter; fi"
-        description: Installing jupyter...
-        stdout: true
-        quiet: false
+    # - 
+    #     command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip3 install --user jupyter; fi"
+    #     description: Installing jupyter...
+    #     stdout: true
+    #     quiet: false
 
 - link:
     ~/.bashrc: 
@@ -48,19 +48,19 @@
         path: bash_profile
     
 - shell:
-    # -
-    #     command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
-    #     description: Sourcing...
-    #     stdout: true
-    #     quiet: false
-    - 
-        command: "jupyter notebook -y --generate-config"
-        description: Configuring jupyter...
+    -
+        command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
+        description: Sourcing...
         stdout: true
         quiet: false
+    # - 
+    #     command: "jupyter notebook -y --generate-config"
+    #     description: Configuring jupyter...
+    #     stdout: true
+    #     quiet: false
 
-- link:
-    ~/.jupyter/jupyter_notebook_config.json:
-        force: true
-        path: jupyter_notebook_config.json
+# - link:
+#     ~/.jupyter/jupyter_notebook_config.json:
+#         force: true
+#         path: jupyter_notebook_config.json
         

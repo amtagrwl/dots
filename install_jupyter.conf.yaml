@@ -1,0 +1,29 @@
+- shell:
+    -
+        command: "if [ ! -r \"$(command -v pip3)\" ]; then curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py; fi"
+        description: Installing pip3...
+        stdout: true
+        quiet: false
+    -
+        command: "if [ -r \"$(command -v pip3)\" ]; then pip3 install --upgrade --user pip; fi"
+        description: Upgrading pip3...
+        stdout: true
+        quiet: false
+    -
+        command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip3 install --user jupyter; fi"
+        description: Installing jupyter...
+        stdout: true
+        quiet: false
+
+- shell:
+    -
+        command: ". ~/.bash_profile && jupyter notebook -y --generate-config"
+        description: Configuring jupyter...
+        stdout: true
+        quiet: false
+
+- link:
+    ~/.jupyter/jupyter_notebook_config.json:
+        force: true
+        path: jupyter_notebook_config.json
+
