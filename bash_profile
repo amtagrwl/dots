@@ -1,5 +1,12 @@
 # Runs only with login shell (Most uses)
 
+# Enable bash completion
+# Load bash completions
+BREW_BASH_COMPLETION_FILE="$(brew --prefix)/etc/profile.d/bash_completion.sh"
+if [[ -r "$BREW_BASH_COMPLETION_FILE" ]]; then
+  . "$BREW_BASH_COMPLETION_FILE"
+fi
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -32,11 +39,4 @@ if [ "$(uname)" == "Darwin" ]; then
     if [ -d "/usr/local/sbin" ]; then
     	export PATH="/usr/local/sbin:${PATH}"
     fi
-fi
-
-# Enable bash completion
-# Load bash completions
-BREW_BASH_COMPLETION_FILE="$(brew --prefix)/etc/profile.d/bash_completion.sh"
-if [[ -r "$BREW_BASH_COMPLETION_FILE" ]]; then
-  . "$BREW_BASH_COMPLETION_FILE"
 fi
