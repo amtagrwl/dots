@@ -1,66 +1,24 @@
-- clean: ['~']
-
-- shell:
-    -
-        command: "if [ ! -r \"$(command -v tmux)\" ]; then chmod +x tmux_local_install.sh && ./tmux_local_install.sh; fi"
-        description: Installing tmux locally...
-        stdout: true
-        quiet: false
-    -
-        command: "if [ ! -r \"$(command -v tmux)\" ]; then git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm; fi"
-        description: Installing tpm...
-        stdout: true
-        quiet: false
-    - 
-        command: "if [ ! -r \"$(command -v pip3)\" ]; then curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py && rm get-pip.py; fi" 
-        description: Installing pip3...
-        stdout: true
-        quiet: false
-    - 
-        command: "if [ -r \"$(command -v pip3)\" ]; then pip3 install --upgrade --user pip; fi"
-        description: Upgrading pip3...
-        stdout: true
-        quiet: false
-    # - 
-    #     command: "if [ ! -r \"$(command -v jupyter)\" ]; then pip3 install --user jupyter; fi"
-    #     description: Installing jupyter...
-    #     stdout: true
-    #     quiet: false
+- clean: ["~"]
 
 - link:
-    ~/.bashrc: 
-        force: true
-        path: bashrc
-    ~/.bash_logout:
-        force: true
-        path: bash_logout
-    ~/.bash_aliases: 
-        force: true
-        path: bash_aliases
-    ~/.tmux.conf: 
-        force: true
-        path: tmux.conf
-    ~/.profile:
-        force: true
-        path: profile
-    ~/.bash_profile:
-        force: true
-        path: bash_profile
-    
+      ~/.bashrc:
+          force: true
+          path: bashrc
+      ~/.bash_logout:
+          force: true
+          path: bash_logout
+      ~/.bash_aliases:
+          force: true
+          path: bash_aliases
+      ~/.profile:
+          force: true
+          path: profile
+      ~/.bash_profile:
+          force: true
+          path: bash_profile
+
 - shell:
-    -
-        command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
+      - command: "if [ -r ~/.bash_profile ]; then . ~/.bash_profile; fi"
         description: Sourcing...
         stdout: true
         quiet: false
-    # - 
-    #     command: "jupyter notebook -y --generate-config"
-    #     description: Configuring jupyter...
-    #     stdout: true
-    #     quiet: false
-
-# - link:
-#     ~/.jupyter/jupyter_notebook_config.json:
-#         force: true
-#         path: jupyter_notebook_config.json
-        
