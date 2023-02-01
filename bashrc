@@ -18,3 +18,6 @@ fi
 if [ -f /usr/local/bin/starship ]; then
     eval "$(starship init bash)"
 fi
+
+# Set up FZF
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
