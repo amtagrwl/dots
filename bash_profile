@@ -27,7 +27,7 @@ fi
 if [ "$(uname)" == "Darwin" ]; then
         # Mac OSX
     if [ -d "$HOME/Library/Python/3.8/bin" ]; then
-    	export PATH="~/Library/Python/3.8/bin:${PATH}"
+    	export PATH="$HOME/Library/Python/3.8/bin:${PATH}"
     fi
     if [ -d "/usr/local/sbin" ]; then
     	export PATH="/usr/local/sbin:${PATH}"
