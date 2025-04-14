@@ -36,3 +36,12 @@ This setup uses a `Brewfile` to manage Homebrew packages (formulae and casks).
 - [x] Set up Brew package management (`Brewfile`)
 - [x] Review and potentially link other config files (e.g., `tmux.conf`, `profile`?)
 - [x] Clean up unused files (bash configs, tmux installer script?)
+- [ ] Configure Cursor/VS Code settings sync (Decide method: Built-in Sync or Manual Link)
+- [ ] Configure Git settings (`.gitconfig`, potentially `.gitignore_global`) 
+    - [ ] User review `.gitconfig` for sensitive data
+    - [ ] Copy file(s) to repo
+    - [ ] Add link directives
+- [ ] Configure installed Brew packages:
+    - [ ] Set up `starship` prompt (config file + `zshrc` init)
+    - [ ] Verify/Configure `zsh-autocomplete` (check if `zshrc` sourcing needed)
+    - [ ] Add manual step reminder for `gh auth login`
