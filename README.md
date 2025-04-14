@@ -34,5 +34,5 @@ This setup uses a `Brewfile` to manage Homebrew packages (formulae and casks).
     - [x] Add `mkcd` function
     - [x] Enable `AUTO_CD`
 - [x] Set up Brew package management (`Brewfile`)
-- [ ] Review and potentially link other config files (e.g., `tmux.conf`, `profile`?)
-- [ ] Clean up unused files (bash configs, tmux installer script?)
+- [x] Review and potentially link other config files (e.g., `tmux.conf`, `profile`?)
+- [x] Clean up unused files (bash configs, tmux installer script?)
