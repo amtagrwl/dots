@@ -1,7 +1,10 @@
 - clean: ['~']
 
 - shell:
-    []
+    - command: brew bundle install --file Brewfile
+      description: Installing Brew packages from Brewfile...
+      stdout: true
+      stderr: true
 
 - link:
     ~/.zshrc:
