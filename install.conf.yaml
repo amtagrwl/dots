@@ -13,4 +13,16 @@
     # Add other links here as needed
 
 - shell:
-    []
+  - command: |
+      if [ "$(uname)" = "Darwin" ]; then
+        echo "Configuring Finder settings for macOS..."
+        defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+        defaults write com.apple.finder AppleShowAllFiles -bool true
+        echo "Restarting Finder to apply settings..."
+        killall Finder
+      else
+        echo "Skipping Finder configuration as not on macOS."
+      fi
+    description: Configure Finder settings on macOS (show extensions and hidden files)
+    stdout: true
+    stderr: true
