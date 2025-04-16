@@ -47,7 +47,7 @@ setopt AUTO_CD # Change dir by typing directory name
 # --- Aliases ---
 # Use eza instead of ls (install via Brew)
 alias ls='eza --group-directories-first'
-alias ll='eza -lgh --group-directories-first --git'
+alias ll='eza -lagh --group-directories-first --git'
 alias l.='eza -ld .* --group-directories-first --git'
 
 # Other aliases
@@ -75,4 +75,4 @@ function mkcd {
 # Source local/machine-specific zsh config if it exists
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
-fi 
+fi
