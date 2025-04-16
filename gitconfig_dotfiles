@@ -1,0 +1,12 @@
+# ~/.gitconfig_dotfiles - Managed by Dotbot
+# Contains non-sensitive, non-1Password managed settings
+
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  lg = log --oneline --graph --decorate --all
+# Add other aliases or settings here
+# [core]
+#   editor = vim 

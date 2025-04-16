@@ -10,6 +10,10 @@
     ~/.zshrc:
         force: true
         path: zshrc
+    # Link Git settings managed by Dotbot (non-1Password related)
+    ~/.gitconfig_dotfiles:
+        force: true # or relink: true
+        path: gitconfig_dotfiles
     # Add other links here as needed
 
 - shell:
