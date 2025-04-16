@@ -16,7 +16,16 @@
         path: gitconfig_dotfiles
     # Add other links here as needed
 
+# Shell commands to set up configurations
 - shell:
+  - command: chmod +x scripts/ensure_gitconfig_include.sh
+    description: Make ensure_gitconfig_include script executable
+    quiet: true
+  - command: ./scripts/ensure_gitconfig_include.sh
+    description: Ensure ~/.gitconfig includes Dotbot git settings
+    stdout: true
+    stderr: true
+
   - command: chmod +x scripts/macos_finder_settings.sh
     description: Make macOS Finder settings script executable
     quiet: true

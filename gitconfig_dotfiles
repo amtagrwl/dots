@@ -8,5 +8,8 @@
   ci = commit
   lg = log --oneline --graph --decorate --all
 # Add other aliases or settings here
+[pull]
+  rebase = true # Prefer rebase over merge for git pull
+
 # [core]
 #   editor = vim 
