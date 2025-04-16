@@ -38,7 +38,7 @@ This setup uses a `Brewfile` to manage Homebrew packages (formulae and casks).
 - [x] Clean up unused files (bash configs, tmux installer script?)
 - [x] Configure Git settings (`.gitconfig_dotfiles`, ensure include in `~/.gitconfig`)
 - [ ] Review installed Brew packages & configure:
-    - [ ] Set up `starship` prompt (config file + `zshrc` init)
+    - [x] Set up `starship` prompt (config file + `zshrc` init)
     - [ ] Verify/Configure `zsh-autocomplete` (check if `zshrc` sourcing needed)
     - [ ] Add manual step reminder for `gh auth login`
 - [x] Configure VS Code/Cursor settings (`settings.json`, `keybindings.json`)

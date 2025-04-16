@@ -76,3 +76,6 @@ function mkcd {
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
+
+# Initialize Starship prompt
+eval "$(starship init zsh)"

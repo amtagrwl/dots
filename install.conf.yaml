@@ -20,6 +20,11 @@
         path: config/ruff/ruff.toml
         create: true # Create parent directory (~/.config/ruff) if needed
         force: true # Overwrite if it exists
+    # Link Starship configuration
+    ~/.config/starship.toml:
+        path: config/starship/starship.toml
+        create: true # Create parent directory (~/.config) if needed
+        force: true # Overwrite if it exists
     # Link Cursor settings
     "~/Library/Application Support/Cursor/User/settings.json":
         path: config/vscode/settings.json
