@@ -13,16 +13,15 @@
     # Add other links here as needed
 
 - shell:
+  - command: chmod +x scripts/macos_finder_settings.sh
+    description: Make macOS Finder settings script executable
+    quiet: true
   - command: |
       if [ "$(uname)" = "Darwin" ]; then
-        echo "Configuring Finder settings for macOS..."
-        defaults write NSGlobalDomain AppleShowAllExtensions -bool true
-        defaults write com.apple.finder AppleShowAllFiles -bool true
-        echo "Restarting Finder to apply settings..."
-        killall Finder
+        ./scripts/macos_finder_settings.sh
       else
-        echo "Skipping Finder configuration as not on macOS."
+        echo "Skipping macOS Finder configuration as not on macOS."
       fi
-    description: Configure Finder settings on macOS (show extensions and hidden files)
+    description: Configure macOS Finder settings
     stdout: true
     stderr: true
