@@ -1,4 +1,4 @@
-- clean: ['~']
+- clean: ["~"]
 
 - shell:
     - command: brew bundle install --file Brewfile
@@ -8,52 +8,59 @@
 
 - link:
     ~/.zshrc:
-        force: true
-        path: zshrc
+      force: true
+      path: zshrc
+
     # Link Git settings managed by Dotbot (non-1Password related)
     ~/.gitconfig_dotfiles:
-        force: true # or relink: true
-        path: gitconfig_dotfiles
-    # Add other links here as needed
+      force: true # or relink: true
+      path: gitconfig_dotfiles
+
     # Link global Ruff configuration
     ~/.config/ruff/ruff.toml:
-        path: config/ruff/ruff.toml
-        create: true # Create parent directory (~/.config/ruff) if needed
-        force: true # Overwrite if it exists
+      path: config/ruff/ruff.toml
+      create: true # Create parent directory (~/.config/ruff) if needed
+      force: true # Overwrite if it exists
+
     # Link Starship configuration
     ~/.config/starship.toml:
-        path: config/starship/starship.toml
-        create: true # Create parent directory (~/.config) if needed
-        force: true # Overwrite if it exists
+      path: config/starship/starship.toml
+      create: true # Create parent directory (~/.config) if needed
+      force: true # Overwrite if it exists
+
     # Link Cursor settings
     "~/Library/Application Support/Cursor/User/settings.json":
-        path: config/vscode/settings.json
-        create: true
-        force: true
+      path: config/vscode/settings.json
+      create: true
+      force: true
+
+    # Link Cursor keybindings
     "~/Library/Application Support/Cursor/User/keybindings.json":
-        path: config/vscode/keybindings.json
-        create: true
-        force: true
+      path: config/vscode/keybindings.json
+      create: true
+      force: true
 
 # Shell commands to set up configurations
 - shell:
-  - command: chmod +x scripts/ensure_gitconfig_include.sh
-    description: Make ensure_gitconfig_include script executable
-    quiet: true
-  - command: ./scripts/ensure_gitconfig_include.sh
-    description: Ensure ~/.gitconfig includes Dotbot git settings
-    stdout: true
-    stderr: true
+    - command: chmod +x scripts/ensure_gitconfig_include.sh
+      description: Make ensure_gitconfig_include script executable
+      quiet: true
 
-  - command: chmod +x scripts/macos_finder_settings.sh
-    description: Make macOS Finder settings script executable
-    quiet: true
-  - command: |
-      if [ "$(uname)" = "Darwin" ]; then
-        ./scripts/macos_finder_settings.sh
-      else
-        echo "Skipping macOS Finder configuration as not on macOS."
-      fi
-    description: Configure macOS Finder settings
-    stdout: true
-    stderr: true
+    - command: ./scripts/ensure_gitconfig_include.sh
+      description: Ensure ~/.gitconfig includes Dotbot git settings
+      stdout: true
+      stderr: true
+
+    - command: chmod +x scripts/macos_finder_settings.sh
+      description: Make macOS Finder settings script executable
+      quiet: true
+
+    - command: |
+        if [ "$(uname)" = "Darwin" ]; then
+          ./scripts/macos_finder_settings.sh
+        else
+          echo "Skipping macOS Finder configuration as not on macOS."
+        fi
+      description: Configure macOS Finder settings
+      stdout: true
+      stderr: true
