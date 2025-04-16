@@ -1,4 +1,12 @@
+# Set up Homebrew environment
+if command -v brew &> /dev/null; then
+ eval "$(brew shellenv)"
+fi
+
 # ~/.zshrc: executed by zsh for interactive shells.
+
+# Source zsh-autocomplete plugin (installed via Homebrew)
+source "$(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
 # Add user bin directories to PATH
 if [ -d "$HOME/bin" ]; then
