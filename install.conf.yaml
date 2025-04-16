@@ -15,6 +15,20 @@
         force: true # or relink: true
         path: gitconfig_dotfiles
     # Add other links here as needed
+    # Link global Ruff configuration
+    ~/.config/ruff/ruff.toml:
+        path: config/ruff/ruff.toml
+        create: true # Create parent directory (~/.config/ruff) if needed
+        force: true # Overwrite if it exists
+    # Link Cursor settings
+    "~/Library/Application Support/Cursor/User/settings.json":
+        path: config/vscode/settings.json
+        create: true
+        force: true
+    "~/Library/Application Support/Cursor/User/keybindings.json":
+        path: config/vscode/keybindings.json
+        create: true
+        force: true
 
 # Shell commands to set up configurations
 - shell:

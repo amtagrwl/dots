@@ -1,0 +1,161 @@
+{
+      //----------------------------------------------------------------------------
+      // General Editor Settings
+      //----------------------------------------------------------------------------
+      "editor.fontFamily": "'Menlo for Powerline', Menlo, Monaco, 'Courier New', monospace",
+      "editor.suggestSelection": "first", // "first" or "recentlyUsed"
+      "editor.rulers": [
+        80,
+        88
+      ],
+      "editor.renderWhitespace": "boundary", // "none", "boundary", "selection", "trailing", "all"
+      "editor.cursorSurroundingLines": 6,
+      "editor.stablePeek": true,
+      "editor.stickyScroll.enabled": true,
+      "editor.inlineSuggest.enabled": true, // Enables ghost text suggestions (e.g., from Copilot/Cursor)
+
+      //----------------------------------------------------------------------------
+      // Formatting & Saving
+      //----------------------------------------------------------------------------
+      "editor.formatOnSave": true,
+      // "editor.formatOnPaste": false, // Consider enabling if desired
+      // "editor.formatOnType": false, // Consider enabling if desired
+
+      "files.insertFinalNewline": true,
+      "files.trimTrailingWhitespace": true,
+      "diffEditor.ignoreTrimWhitespace": false, // Show whitespace changes in diff view
+
+      //----------------------------------------------------------------------------
+      // Language Specific Settings
+      //----------------------------------------------------------------------------
+      "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff", // Use Ruff for formatting
+        "editor.codeActionsOnSave": {
+          "source.fixAll.ruff": "explicit", // Run Ruff fixes on save
+          "source.organizeImports.ruff": "explicit" // Run Ruff import organizing on save
+        },
+        "editor.formatOnType": true, // Specific format-on-type setting for Python
+        "diffEditor.ignoreTrimWhitespace": false // Override global setting if needed
+      },
+      // "[yaml]": { // Example if you re-add a YAML formatter
+      //   "editor.defaultFormatter": "redhat.vscode-yaml"
+      // },
+
+      //----------------------------------------------------------------------------
+      // Python Language Server & Analysis (Pylance, MyPy)
+      //----------------------------------------------------------------------------
+      "python.languageServer": "Pylance", // If installed and preferred
+      "python.analysis.typeCheckingMode": "basic", // or "strict"
+      "python.analysis.inlayHints.functionReturnTypes": true,
+      "python.analysis.inlayHints.variableTypes": true,
+      "python.linting.mypyEnabled": true, // Keep MyPy enabled alongside Ruff
+      "python.linting.mypyCategorySeverity.note": "Warning",
+
+      //----------------------------------------------------------------------------
+      // Terminal Settings
+      //----------------------------------------------------------------------------
+      "terminal.integrated.defaultProfile.osx": "zsh",
+      "terminal.integrated.scrollback": 10000,
+      "terminal.integrated.shellIntegration.enabled": true, // Recommended for better shell integration
+      "terminal.integrated.inheritEnv": true, // Inherit env from VS Code process (usually desired)
+
+      //----------------------------------------------------------------------------
+      // Git & GitLens Settings
+      //----------------------------------------------------------------------------
+      "git.autofetch": true,
+      "git.confirmSync": false,
+      "git.suggestSmartCommit": false, // Don't suggest staging all changes on commit
+      "gitlens.codeLens.scopes": [
+        "containers",
+        "document"
+      ],
+      "gitlens.hovers.currentLine.over": "line",
+
+      //----------------------------------------------------------------------------
+      // Vim Extension Settings (vscodevim.vim)
+      // Review these bindings later if needed
+      //----------------------------------------------------------------------------
+      "vim.leader": "<Space>",
+      "vim.insertModeKeyBindingsNonRecursive": [
+        {
+          "before": ["j", "k"],
+          "after": ["<ESC>"]
+        }
+      ],
+      "vim.normalModeKeyBindingsNonRecursive": [
+        { "before": ["J"], "after": ["5", "j"] },
+        { "before": ["K"], "after": ["5", "k"] },
+        { "before": ["<C-h>"], "after": ["<C-w>", "h"] },
+        { "before": ["<C-j>"], "after": ["<C-w>", "j"] },
+        { "before": ["<C-k>"], "after": ["<C-w>", "k"] },
+        { "before": ["<C-l>"], "after": ["<C-w>", "l"] },
+        { "before": ["<Leader>", "j"], "after": ["J"] }, // Map <leader>j to join lines
+        { "before": ["<Leader>", "f"], "commands": ["workbench.action.quickOpen"] },
+        { "before": ["<Leader>", "p"], "commands": ["workbench.action.showCommands"] },
+        { "before": ["<Leader>", "t"], "commands": ["workbench.action.gotoSymbol"] },
+        { "before": ["<Leader>", "w"], "commands": ["workbench.action.files.save"] }
+      ],
+      "vim.visualModeKeyBindingsNonRecursive": [
+        {
+          "before": ["j", "k"],
+          "after": ["<ESC>"]
+        }
+      ],
+
+      //----------------------------------------------------------------------------
+      // Other Extension Settings
+      //----------------------------------------------------------------------------
+
+      // Rewrap (for rewrapping comments/text)
+      "rewrap.autoWrap.enabled": true,
+
+      // VS IntelliCode (AI-assisted completions)
+      "vsintellicode.features.python.deepLearning": "enabled",
+
+      // Todo Tree (Highlighting TODO, FIXME, etc.)
+      "todo-tree.general.tags": [
+        "BUG",
+        "HACK",
+        "FIXME",
+        "TODO",
+        "XXX",
+        "DONE",
+        "NOTE"
+      ],
+
+      // Ruff Linter/Formatter Extension Settings
+      "ruff.showNotifications": "onError", // Show Ruff notifications only on errors
+
+      //----------------------------------------------------------------------------
+      // Cursor Specific Settings (Keep if using Cursor IDE)
+      //----------------------------------------------------------------------------
+      "cursor.cpp.disabledLanguages": [
+        "scminput"
+      ],
+      "cursor.cpp.enablePartialAccepts": true,
+      "cursor.diffs.useCharacterLevelDiffs": true
+
+      //----------------------------------------------------------------------------
+      // Removed/Deprecated Settings (Examples for reference)
+      //----------------------------------------------------------------------------
+      // "files.exclude": { ... }, // Removed - was hiding Java files
+      // "python.formatting.provider": "black", // Removed - replaced by editor.defaultFormatter
+      // "python.linting.flake8Args": [ ... ], // Removed - replaced by Ruff
+      // "python.linting.pydocstyleArgs": [ ... ], // Removed - replaced by Ruff
+      // "tabnine.experimentalAutoImports": true, // Removed - Tabnine not used
+      // "jupyter.alwaysTrustNotebooks": true, // Removed - Jupyter not used
+      // "notebook.cellToolbarLocation": { ... }, // Removed - Jupyter not used
+      // "workbench.editorAssociations": { "*.ipynb": ... }, // Removed - Jupyter not used
+      // "github.copilot.enable": { ... }, // Removed - Copilot not used
+      // "workbench.colorCustomizations": {}, // Removed - was empty
+      // "[yaml]": { "editor.defaultFormatter": ... }, // Removed - no default YAML formatter set
+      // "githubPullRequests.pullBranch": "never", // Removed - GitHub PR extension settings
+      // "githubPullRequests.queries": [ ... ], // Removed - GitHub PR extension settings
+      // "circleci.ssh.privateKey.github": "...", // Removed - Hardcoded sensitive path
+      // "accessibility.signals.terminalBell": { ... }, // Removed - Disabled terminal bell
+      // "terminal.integrated.enableVisualBell": true, // Removed - Disabled terminal bell
+      // "ruff.lineLength": 80, // Removed - Handled by global ruff.toml or Ruff defaults
+      // "svelte.ask-to-enable-ts-plugin": false, // Removed - Svelte not used
+      // "vsintellicode.modify.editor.suggestSelection": "...", // Removed - Informational only
+
+    } 

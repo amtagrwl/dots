@@ -1,0 +1,46 @@
+# Global Ruff Configuration (located at ~/.config/ruff/ruff.toml via symlink)
+# This file provides base settings. Project-specific settings in pyproject.toml
+# or local ruff.toml/.ruff.toml files will override these.
+
+# Set the default line length (matches Black)
+line-length = 88
+
+# Default indent width (matches Black)
+indent-width = 4
+
+# Assume a reasonably modern Python version if not specified in project
+target-version = "py38"
+
+[lint]
+# Select rules:
+# F: Pyflakes
+# E: pycodestyle Errors
+# W: pycodestyle Warnings
+# I: isort (Import sorting)
+# D: pydocstyle (Docstrings)
+# You can add more rule sets here as needed (e.g., "UP" for pyupgrade)
+select = ["F", "E", "W", "I", "D"]
+
+# Optional: Ignore specific rules globally if needed
+# ignore = ["E501"] # Example: ignore line length rule globally
+
+# Allow fix for all enabled rules (when `--fix` or code action is used)
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[lint.pydocstyle]
+# Enforce Google-style docstrings globally
+convention = "google"
+
+[format]
+# Use double quotes for strings (like Black)
+quote-style = "double"
+
+# Use spaces for indentation (like Black)
+# indent-style = "space" # This is the default
+
+# Line ending style (auto-detect per file is default and usually fine)
+# line-ending = "auto" 
