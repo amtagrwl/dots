@@ -4,10 +4,7 @@
   //----------------------------------------------------------------------------
   "editor.fontFamily": "'Menlo for Powerline', Menlo, Monaco, 'Courier New', monospace",
   "editor.suggestSelection": "first", // "first" or "recentlyUsed"
-  "editor.rulers": [
-    80,
-    88
-  ], // "none", "boundary", "selection", "trailing", "all"
+  "editor.rulers": [80, 88], // "none", "boundary", "selection", "trailing", "all"
   "editor.cursorSurroundingLines": 6,
   "editor.stablePeek": true,
   "editor.stickyScroll.enabled": true,
@@ -43,12 +40,10 @@
   //----------------------------------------------------------------------------
   // Python Language Server & Analysis (Pylance, MyPy)
   //----------------------------------------------------------------------------
-  "python.languageServer": "Pylance", // If installed and preferred
+  "python.languageServer": "Pylance", // Use the Pylance language server
   "python.analysis.typeCheckingMode": "basic", // or "strict"
   "python.analysis.inlayHints.functionReturnTypes": true,
   "python.analysis.inlayHints.variableTypes": true,
-  "python.linting.mypyEnabled": true, // Keep MyPy enabled alongside Ruff
-  "python.linting.mypyCategorySeverity.note": "Warning",
 
   //----------------------------------------------------------------------------
   // Terminal Settings
@@ -126,7 +121,8 @@
   ],
 
   // Ruff Linter/Formatter Extension Settings
-  "ruff.showNotifications": "onError", // Show Ruff notifications only on errors
+  "ruff.enable": true, // Enable the Ruff extension
+  "ruff.nativeServer": "on", // Use the Rust-based native language server
 
   //----------------------------------------------------------------------------
   // Cursor Specific Settings (Keep if using Cursor IDE)
