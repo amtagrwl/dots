@@ -64,3 +64,17 @@
       description: Configure macOS Finder settings
       stdout: true
       stderr: true
+
+    - command: chmod +x scripts/macos_cursor_vim_settings.sh
+      description: Make macOS Cursor Vim settings script executable
+      quiet: true
+
+    - command: |
+        if [ "$(uname)" = "Darwin" ]; then
+          ./scripts/macos_cursor_vim_settings.sh
+        else
+          echo "Skipping macOS Cursor Vim configuration as not on macOS."
+        fi
+      description: Configure macOS Cursor Vim key repeat settings
+      stdout: true
+      stderr: true
