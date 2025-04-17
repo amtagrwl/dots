@@ -17,9 +17,10 @@ target-version = "py38"
 # E: pycodestyle Errors
 # W: pycodestyle Warnings
 # I: isort (Import sorting)
-# D: pydocstyle (Docstrings)
+# D: pydocstyle (Docstrings) DISABLED
+# UP: pyupgrade (Python version upgrade)
 # You can add more rule sets here as needed (e.g., "UP" for pyupgrade)
-select = ["F", "E", "W", "I", "D"]
+select = ["F", "E", "W", "I", "UP"]
 
 # Optional: Ignore specific rules globally if needed
 # ignore = ["E501"] # Example: ignore line length rule globally
@@ -43,4 +44,4 @@ quote-style = "double"
 # indent-style = "space" # This is the default
 
 # Line ending style (auto-detect per file is default and usually fine)
-# line-ending = "auto" 
+# line-ending = "auto"
