@@ -121,8 +121,7 @@
   ],
 
   // Ruff Linter/Formatter Extension Settings
-  "ruff.enable": true, // Enable the Ruff extension
-  "ruff.nativeServer": "on", // Use the Rust-based native language server
+  "ruff.enable": true, // Use the Rust-based native language server
 
   //----------------------------------------------------------------------------
   // Cursor Specific Settings (Keep if using Cursor IDE)
@@ -130,7 +129,10 @@
   "cursor.cpp.disabledLanguages": ["scminput"],
   "cursor.cpp.enablePartialAccepts": true,
   "cursor.diffs.useCharacterLevelDiffs": true,
-  "editor.renderWhitespace": "boundary"
+  "editor.renderWhitespace": "boundary",
+  "ruff.codeAction.disableRuleComment": {
+    "enable": false
+  }
 
   //----------------------------------------------------------------------------
   // Removed/Deprecated Settings (Examples for reference)
