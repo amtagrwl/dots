@@ -32,6 +32,10 @@ unfixable = []
 # Allow unused variables when underscore-prefixed
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
+[lint.isort]
+# Force each imported item to be on its own line
+force-single-line = true
+
 [lint.pydocstyle]
 # Enforce Google-style docstrings globally
 convention = "google"
@@ -41,7 +45,7 @@ convention = "google"
 quote-style = "double"
 
 # Use spaces for indentation (like Black)
-# indent-style = "space" # This is the default
+indent-style = "space"
 
 # Line ending style (auto-detect per file is default and usually fine)
 # line-ending = "auto"
