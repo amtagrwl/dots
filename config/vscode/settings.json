@@ -132,7 +132,12 @@
   "editor.renderWhitespace": "boundary",
   "ruff.codeAction.disableRuleComment": {
     "enable": false
-  }
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cursor.composer.shouldAutoScrollToBottom": false,
+  "cursor.composer.shouldAllowCustomModes": true
 
   //----------------------------------------------------------------------------
   // Removed/Deprecated Settings (Examples for reference)
