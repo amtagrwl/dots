@@ -5,6 +5,13 @@ fi
 
 # ~/.zshrc: executed by zsh for interactive shells.
 
+# Standard Zsh completion settings
+setopt AUTO_MENU
+unsetopt MENU_COMPLETE
+
+# Configure zsh-autocomplete behavior (must be BEFORE sourcing)
+zstyle ':completion:*' menu select
+
 # Source zsh-autocomplete plugin (installed via Homebrew)
 source "$(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
