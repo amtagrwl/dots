@@ -85,8 +85,9 @@ if [ -f ~/.zshrc.local ]; then
 fi
 
 # 1Password secrets for Claude Code MCP
-export GH_MCP_PAT="op://Personal/Claude Code Github MCP/credential"
-alias claude='op run -- claude'
+function claude() {
+  GH_MCP_PAT="$(op read 'op://Personal/Claude Code Github MCP/credential')" command claude "$@"
+}
 
 # Initialize Starship prompt
 eval "$(starship init zsh)"
