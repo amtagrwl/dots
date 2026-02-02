@@ -84,5 +84,15 @@ if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
 
+# 1Password secrets for Claude Code MCP
+export GH_MCP_PAT="op://Personal/Claude Code Github MCP/credential"
+alias claude='op run -- claude'
+
 # Initialize Starship prompt
 eval "$(starship init zsh)"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/amtagrwl/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/amtagrwl/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/amtagrwl/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/amtagrwl/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
