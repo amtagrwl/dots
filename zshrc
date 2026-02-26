@@ -79,6 +79,10 @@ function mkcd {
     fi
 }
 
+# OpenTofu/Terraform: share downloaded providers across all worktrees
+export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+mkdir -p "$TF_PLUGIN_CACHE_DIR" 2>/dev/null
+
 # Source local/machine-specific zsh config if it exists
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
