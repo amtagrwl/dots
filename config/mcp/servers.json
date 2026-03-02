@@ -1,0 +1,28 @@
+{
+  "servers": {
+    "playwright": {
+      "transport": "stdio",
+      "command": "bunx",
+      "args": ["@playwright/mcp@0.0.68"]
+    },
+    "deepwiki": {
+      "transport": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "github": {
+      "transport": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "auth": { "type": "bearer", "env_var": "GH_MCP_PAT" }
+    },
+    "gcp-observability": {
+      "transport": "stdio",
+      "command": "bunx",
+      "args": ["@google-cloud/observability-mcp@0.2.3"]
+    },
+    "gcloud": {
+      "transport": "stdio",
+      "command": "bunx",
+      "args": ["@google-cloud/gcloud-mcp@0.5.3"]
+    }
+  }
+}

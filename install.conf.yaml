@@ -78,3 +78,12 @@
       description: Configure macOS Cursor Vim key repeat settings
       stdout: true
       stderr: true
+
+    - command: chmod +x scripts/sync_mcp_servers.sh
+      description: Make MCP server sync script executable
+      quiet: true
+
+    - command: ./scripts/sync_mcp_servers.sh
+      description: Sync MCP servers to Claude Code, Cursor, Codex, and VS Code
+      stdout: true
+      stderr: true

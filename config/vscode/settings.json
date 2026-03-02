@@ -137,7 +137,12 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cursor.composer.shouldAutoScrollToBottom": false,
-  "cursor.composer.shouldAllowCustomModes": true
+  "cursor.composer.shouldAllowCustomModes": true,
+  "cursor.composer.shouldChimeAfterChatFinishes": true,
+  "cursor.composer.backspaceRemoveContext": false,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 
   //----------------------------------------------------------------------------
   // Removed/Deprecated Settings (Examples for reference)
