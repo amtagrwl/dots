@@ -30,6 +30,11 @@ if [ -d "$HOME/.local/bin" ]; then
     export PATH="$HOME/.local/bin:${PATH}"
 fi
 
+# Add bun global bin to PATH (for agent-browser, etc.)
+if [ -d "$HOME/.bun/bin" ]; then
+    export PATH="$HOME/.bun/bin:${PATH}"
+fi
+
 # Add /usr/local/bin and /usr/local/sbin (on macOS) to PATH
 if [ "$(uname)" = "Darwin" ]; then
     if [ -d "/usr/local/bin" ]; then

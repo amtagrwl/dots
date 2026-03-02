@@ -40,6 +40,16 @@
       create: true
       force: true
 
+    # Link Claude Code agent-browser skill
+    ~/.agents/skills/agent-browser:
+      path: config/claude-skills/agent-browser
+      create: true
+      force: true
+    ~/.claude/skills/agent-browser:
+      path: config/claude-skills/agent-browser
+      create: true
+      force: true
+
 # Shell commands to set up configurations
 - shell:
     - command: chmod +x scripts/ensure_gitconfig_include.sh
@@ -85,5 +95,16 @@
 
     - command: ./scripts/sync_mcp_servers.sh
       description: Sync MCP servers to Claude Code, Cursor, Codex, and VS Code
+      stdout: true
+      stderr: true
+
+    - command: |
+        if command -v bun &>/dev/null; then
+          bun add -g agent-browser 2>/dev/null
+          agent-browser install 2>/dev/null
+        else
+          echo "Skipping agent-browser: bun not installed"
+        fi
+      description: Install agent-browser CLI and Chromium
       stdout: true
       stderr: true
