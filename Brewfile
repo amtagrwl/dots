@@ -21,6 +21,7 @@ cask "spotify"
 cask "airbuddy"
 cask "linear-linear"
 cask "dbeaver-community"
+cask "qlmarkdown"
 mas "Amphetamine", id: 937984704
 vscode "charliermarsh.ruff"
 vscode "esbenp.prettier-vscode"
