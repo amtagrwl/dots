@@ -1,0 +1,40 @@
+personality = "pragmatic"
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+
+[mcp_servers.playwright]
+command = "bunx"
+args = ["@playwright/mcp@0.0.68"]
+
+[mcp_servers.deepwiki]
+url = "https://mcp.deepwiki.com/mcp"
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+bearer_token_env_var = "GH_MCP_PAT"
+
+[mcp_servers.gcp-observability]
+command = "bunx"
+args = ["@google-cloud/observability-mcp@0.2.3"]
+
+[mcp_servers.gcloud]
+command = "bunx"
+args = ["@google-cloud/gcloud-mcp@0.5.3"]
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
