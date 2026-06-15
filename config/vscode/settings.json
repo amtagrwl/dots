@@ -142,7 +142,8 @@
   "cursor.composer.backspaceRemoveContext": false,
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
-  }
+  },
+  "window.autoDetectColorScheme": false
 
   //----------------------------------------------------------------------------
   // Removed/Deprecated Settings (Examples for reference)

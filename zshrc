@@ -108,3 +108,18 @@ eval "$(starship init zsh)"
 # Google Cloud SDK (installed via Homebrew cask)
 if [ -f '/opt/homebrew/share/google-cloud-sdk/path.zsh.inc' ]; then . '/opt/homebrew/share/google-cloud-sdk/path.zsh.inc'; fi
 if [ -f '/opt/homebrew/share/google-cloud-sdk/completion.zsh.inc' ]; then . '/opt/homebrew/share/google-cloud-sdk/completion.zsh.inc'; fi
+
+# fzf — fuzzy finder (Ctrl-T files, Ctrl-R history, Alt-C cd). Sourced AFTER
+# zsh-autocomplete so its keybindings win. Uses fd as the file walker.
+if command -v fzf &>/dev/null; then
+    source <(fzf --zsh)
+    if command -v fd &>/dev/null; then
+        export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    fi
+fi
+
+# zoxide — smarter cd; `z <dir>` jumps by frecency (cd still works as normal).
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh)"
+fi

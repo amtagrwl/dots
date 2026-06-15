@@ -1,6 +1,6 @@
 personality = "pragmatic"
 model = "gpt-5.5"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "xhigh"
 
 [mcp_servers.playwright]
 command = "bunx"
@@ -20,6 +20,10 @@ args = ["@google-cloud/observability-mcp@0.2.3"]
 [mcp_servers.gcloud]
 command = "bunx"
 args = ["@google-cloud/gcloud-mcp@0.5.3"]
+
+[mcp_servers.bear]
+command = "/Applications/Bear.app/Contents/MacOS/bearcli"
+args = ["mcp-server"]
 
 [plugins."github@openai-curated"]
 enabled = true

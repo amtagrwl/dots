@@ -50,6 +50,16 @@
       create: true
       force: true
 
+    # Link custom Claude Code skills
+    ~/.claude/skills/clean-storage:
+      path: config/claude-skills/clean-storage
+      create: true
+      force: true
+    ~/.claude/skills/langfuse:
+      path: config/claude-skills/langfuse
+      create: true
+      force: true
+
     # Link Claude Code global config (CLAUDE.md, settings, statusline)
     ~/.claude/CLAUDE.md:
       path: config/claude/CLAUDE.md
@@ -71,6 +81,12 @@
       create: true
       force: true
 
+    # Link Codex global working-style instructions (mirrors ~/.claude/CLAUDE.md)
+    ~/.codex/AGENTS.md:
+      path: config/codex/AGENTS.md
+      create: true
+      force: true
+
 # Shell commands to set up configurations
 - shell:
     - command: chmod +x scripts/ensure_gitconfig_include.sh
@@ -79,6 +95,20 @@
 
     - command: ./scripts/ensure_gitconfig_include.sh
       description: Ensure ~/.gitconfig includes Dotbot git settings
+      stdout: true
+      stderr: true
+
+    - command: chmod +x scripts/ensure_1password_ssh.sh
+      description: Make 1Password SSH script executable
+      quiet: true
+
+    - command: |
+        if [ "$(uname)" = "Darwin" ]; then
+          ./scripts/ensure_1password_ssh.sh
+        else
+          echo "Skipping 1Password SSH config as not on macOS."
+        fi
+      description: Point SSH at the 1Password agent (for git-over-SSH)
       stdout: true
       stderr: true
 

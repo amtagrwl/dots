@@ -23,6 +23,11 @@
       "transport": "stdio",
       "command": "bunx",
       "args": ["@google-cloud/gcloud-mcp@0.5.3"]
+    },
+    "bear": {
+      "transport": "stdio",
+      "command": "/Applications/Bear.app/Contents/MacOS/bearcli",
+      "args": ["mcp-server"]
     }
   }
 }
