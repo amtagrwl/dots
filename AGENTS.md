@@ -50,8 +50,9 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
   **install-on-demand** (commented), not default.
 - **Add/remove an MCP server** → edit `config/mcp/servers.json` (canonical) then
   run `./scripts/sync_mcp_servers.sh`. Never hand-edit the per-tool MCP configs;
-  the script propagates to Claude Code, Cursor, Codex, and VS Code and tracks a
-  manifest for clean removals. Non-canonical entries (manually added per tool)
+  the script propagates to Claude Code, Cursor, and Codex (plus VS Code if a
+  standalone `code` CLI is present — there normally isn't one here, so that target
+  skips) and tracks a manifest for clean removals. Non-canonical entries (manually added per tool)
   are preserved by the sync — and may carry secrets, so don't commit them.
 - **Add a skill** → drop it under `config/claude-skills/<name>/` and add a
   `~/.claude/skills/<name>` link block to `install.conf.yaml` (mirror the
@@ -78,10 +79,26 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
   (see the `claude`/`codex` wrappers in `zshrc`). GitHub access is over **SSH via
   the 1Password agent** — pushes fail until `scripts/ensure_1password_ssh.sh` has
   run and the agent is enabled; clone over **HTTPS** on a fresh machine.
-- `mas` lines need the **App Store app signed in** first. `vscode` lines install
-  into **Cursor** (`brew bundle` auto-detects the `cursor` CLI; there is no `code`).
+- `mas` lines need the **App Store app signed in** *and* the apps already owned on
+  the Apple ID — otherwise `mas install` fails with a misleading `sudo: a terminal
+  is required` error; the App Store GUI is the reliable fallback. `vscode` lines
+  install into **Cursor** (`brew bundle` auto-detects the `cursor` CLI; there is no `code`).
 - `.DS_Store` is gitignored. `brew bundle` continues past failures — always
-  follow installs with `brew bundle check --file Brewfile`.
+  follow installs with `brew bundle check --file Brewfile`. It also **prefetches every
+  download before installing any package**, so one slow/CDN-throttled cask (e.g. spotify)
+  can stall the whole bundle for minutes with nothing installed — expected, not a hang.
+- **`node` is required even though nothing here imports it directly.** `agent-browser`'s
+  global bin has a `#!/usr/bin/env node` shebang (engines >= 24) and bun ships no node shim,
+  so without `brew "node"` the `agent-browser install` step in `install.conf.yaml` dies with
+  `env: node: No such file or directory`. Do **not** prune it as "unused".
+- **Claude Code is not brew-managed.** `bootstrap.sh` installs it via the native installer to
+  `~/.local/bin`, which `brew shellenv` does **not** add to PATH. `install`, `bootstrap.sh`, and
+  `sync_mcp_servers.sh` each export `~/.local/bin` so `command -v claude` resolves in
+  non-interactive runs; remove that and the Claude Code MCP sync + `claude plugin install` steps
+  silently skip on a fresh machine. (Open a new login shell before `claude` is on PATH interactively.)
+- **`docker-desktop`, `zoom`, `openvpn-connect` need sudo/TTY** (pkg installers / a `/usr/local/bin`
+  symlink); they fail in a no-TTY `./install` and `brew bundle check` flags them missing — re-run
+  `brew bundle install` in a real terminal to finish them.
 
 ## Verifying a change before committing
 

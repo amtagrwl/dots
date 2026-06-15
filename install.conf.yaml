@@ -1,7 +1,10 @@
 - clean: ["~"]
 
 - shell:
-    - command: brew bundle install --file Brewfile
+    - command: |
+        if ! brew bundle install --file Brewfile; then
+          echo "[brew bundle] some entries did not apply (sudo casks / mas not owned) — see 'brew bundle check' below"
+        fi
       description: Installing Brew packages from Brewfile...
       stdout: true
       stderr: true
@@ -150,9 +153,14 @@
       stderr: true
 
     - command: |
-        if command -v bun &>/dev/null; then
-          bun add -g agent-browser 2>/dev/null
-          agent-browser install 2>/dev/null
+        if command -v bun >/dev/null 2>&1; then
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun add -g agent-browser || echo "[warn] bun add agent-browser failed"
+          if command -v node >/dev/null 2>&1; then
+            agent-browser install || echo "[warn] agent-browser install failed"
+          else
+            echo "[skip] agent-browser install: node not found (bin shebang needs node)"
+          fi
         else
           echo "Skipping agent-browser: bun not installed"
         fi

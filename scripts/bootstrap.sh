@@ -43,6 +43,12 @@ fi
 if [ -x /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"
 elif [ -x /usr/local/bin/brew ]; then eval "$(/usr/local/bin/brew shellenv)"; fi
 command -v brew >/dev/null 2>&1 && ok "brew on PATH ($(brew --version | head -1))"
+# The Claude CLI installs to ~/.local/bin; brew shellenv doesn't add it. Put it on PATH so
+# the later `command -v claude` checks (plugins) and the ./install MCP sync resolve it.
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
 
 # 4. Submodules (dotbot) ──────────────────────────────────────────────────────
 say "Git submodules (dotbot)"

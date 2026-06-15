@@ -9,6 +9,17 @@ DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${BASEDIR}"
+
+# dotbot shell steps run non-interactively, so ~/.zshrc PATH edits don't apply.
+# Make brew + user-local tools (claude in ~/.local/bin, agent-browser in ~/.bun/bin)
+# reachable regardless of how install was invoked.
+if [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+export PATH="${HOME}/.local/bin:${HOME}/.bun/bin:${PATH}"
+
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
 

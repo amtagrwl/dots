@@ -22,7 +22,9 @@ cd ~/git/dots
 
 The bootstrap pauses for the steps that can't be scripted:
 
-- **App Store** — sign in (so `mas` can install Amphetamine, Bear).
+- **App Store** — sign in, then install **Amphetamine** and **Bear** from the App Store GUI
+  (most reliable). The `mas` lines only succeed if you're signed in *and* already own the apps —
+  otherwise `mas install` fails with a misleading `sudo: a terminal is required`.
 - **1Password** — sign in, then Settings → Developer → enable **Use the SSH agent**
   and **Integrate with 1Password CLI**. This is what makes `git push` over SSH work
   (keys live in 1Password) and what lets the `claude`/`codex` shell wrappers read
@@ -46,20 +48,24 @@ ssh -T git@github.com   # should greet you by username
 
 ## Managing Brew Packages
 
-This setup uses a `Brewfile` to manage Homebrew packages (formulae and casks).
+This setup uses a **curated** `Brewfile`. **Edit it by hand** — do *not* run
+`brew bundle dump` (it wipes the section grouping, the inline comments, the
+install-on-demand block, and the `# Pruned` list, and re-adds everything you
+deliberately removed).
 
-1.  **Install normally:** Use `brew install <formula>` or `brew install --cask <app>` as usual.
-2.  **Update Brewfile:** If you want the new package to be part of your permanent setup (and automatically installed by `./install` on new machines), run:
-    ```bash
-    brew bundle dump --file=./Brewfile --force
-    ```
-    This overwrites the existing `Brewfile` with your current explicitly installed packages.
-3.  **Commit changes:**
+1.  **Add a package you actually use:** add the `brew`/`cask`/`mas`/`vscode` line
+    in the right section with a short "why" comment.
+2.  **Remove a package:** delete its line and move it into the `# Pruned` block so
+    it isn't reinstalled by accident.
+3.  **Verify it parses:** `brew bundle list --file Brewfile`.
+4.  **Commit:**
     ```bash
     git add Brewfile
-    git commit -m "feat: Add <package/app name> to Brewfile"
+    git commit -m "feat: add <package/app name> to Brewfile"
     git push
     ```
+
+See `AGENTS.md` → *How to maintain* for the full convention.
 
 ## TODO
 

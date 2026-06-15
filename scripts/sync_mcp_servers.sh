@@ -5,6 +5,10 @@
 # Idempotent. Preserves non-canonical entries. Tracks managed servers via manifest.
 set -euo pipefail
 
+# dotbot runs shell steps non-interactively, so ~/.zshrc PATH edits don't apply.
+# Make user-local bins reachable (this is where the native `claude` install lives).
+export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVERS_JSON="$SCRIPT_DIR/config/mcp/servers.json"
 MANIFEST="$HOME/.config/dots-mcp-managed.json"

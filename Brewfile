@@ -1,11 +1,17 @@
 # Brewfile — managed by Dotbot (`brew bundle install --file Brewfile`)
-# To capture new packages: brew bundle dump --file=./Brewfile --force
+# To add/remove packages: edit this file BY HAND — never `brew bundle dump` (it strips
+#       comments/grouping and resurrects the pruned entries below). Put new entries in the
+#       right section with a one-line "why"; record removals in the `# Pruned` block.
 # NOTE: `brew bundle` continues past failures. After install, run
 #       `brew bundle check --file Brewfile` to catch anything that didn't apply
 #       (common causes: not signed into the App Store for `mas`, no Cursor for `vscode`).
+# NOTE: `brew bundle` prefetches EVERY download before installing any package, so one
+#       slow/CDN-throttled cask (e.g. spotify) can stall the whole bundle for minutes with
+#       nothing installed yet. This is expected — not a hang.
 
 # ── Shell / core CLI ─────────────────────────────────────────────────────────
 brew "bun"
+brew "node"                # agent-browser's global bin has a `#!/usr/bin/env node` shebang (engines>=24); bun ships no node shim — do NOT prune as "unused"
 brew "eza"                 # modern ls (aliased in zshrc)
 brew "gh"
 brew "gnupg"
@@ -59,7 +65,7 @@ cask "cursor"
 cask "claude"              # Claude desktop (pairs with Claude Code + Bear MCP)
 cask "codex"               # Codex CLI
 cask "codex-app"           # Codex desktop (heavily used)
-cask "docker-desktop"
+cask "docker-desktop"      # needs sudo (symlinks CLI into /usr/local/bin) — run brew bundle in a TTY
 
 # ── Browsers ─────────────────────────────────────────────────────────────────
 cask "arc"                     # primary browser
@@ -72,8 +78,8 @@ cask "wispr-flow"
 # ── Comms / media / vpn ──────────────────────────────────────────────────────
 cask "whatsapp"
 cask "spotify"
-cask "zoom"
-cask "openvpn-connect"
+cask "zoom"                # pkg installer — prompts for sudo (run brew bundle in a TTY)
+cask "openvpn-connect"     # pkg installer — prompts for sudo (run brew bundle in a TTY)
 
 # Pruned (re-add if wanted):
 #   cask "dbeaver-community" — not needed (per request)
@@ -89,7 +95,9 @@ cask "openvpn-connect"
 #   brew "glab"          — GitLab CLI never configured (you use gh)
 #   brew "pipx"          — superseded by `uv tool`
 
-# ── Mac App Store (requires being signed into the App Store app first) ────────
+# ── Mac App Store (sign into the App Store app AND already own these apps, else
+#    `mas install` fails with a misleading "sudo: a terminal is required" error;
+#    the App Store GUI is the reliable fallback) ────────────────────────────────
 mas "Amphetamine", id: 937984704
 mas "Bear", id: 1091189122
 # iWork omitted (unused on source Mac): Keynote 409183694, Numbers 409203825, Pages 409201541
@@ -104,7 +112,9 @@ vscode "ms-azuretools.vscode-containers"
 vscode "ms-azuretools.vscode-docker"
 vscode "ms-python.debugpy"
 vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
+# vscode "ms-python.vscode-pylance"  # OMITTED: Pylance is MS-proprietary, absent from Open VSX, and
+#   license-locked to official MS products — uninstallable in Cursor, so it kept `brew bundle check`
+#   permanently red. `anysphere.cursorpyright` (above) is Cursor's drop-in replacement.
 vscode "openai.chatgpt"
 vscode "stkb.rewrap"
 vscode "tamasfe.even-better-toml"
