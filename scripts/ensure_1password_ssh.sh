@@ -17,13 +17,17 @@ chmod 700 "$ssh_dir"
 touch "$ssh_config"
 chmod 600 "$ssh_config"
 
-if grep -q "1password" "$ssh_config" 2>/dev/null || grep -q "IdentityAgent" "$ssh_config" 2>/dev/null; then
-  echo "✔ ~/.ssh/config already references an IdentityAgent (1Password)."
+# Guard on OUR marker, not any IdentityAgent line — the user may legitimately
+# have per-host `IdentityAgent none` overrides (e.g. GitLab/VM hosts) that must
+# not suppress this managed block.
+marker="# 1Password SSH agent (managed by dotfiles)"
+if grep -qF "$marker" "$ssh_config" 2>/dev/null; then
+  echo "✔ ~/.ssh/config already has the managed 1Password SSH agent block."
 else
   echo "🔧 Adding 1Password SSH agent to ~/.ssh/config..."
   # Snapshot emptiness before we open the append redirect (avoids read+write race).
   [ -s "$ssh_config" ] && leading_blank=1 || leading_blank=0
-  block="# 1Password SSH agent (managed by dotfiles)
+  block="$marker
 Host *
   IdentityAgent \"$agent_sock\""
   [ "$leading_blank" = "1" ] && printf '\n' >> "$ssh_config"

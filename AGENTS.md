@@ -63,9 +63,11 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
 
 ## Conventions & gotchas
 
-- **Shell scripts** are `sh`/`bash` and must pass `shellcheck` (it's installed).
-  Prefer `if/then/else` over `A && B || C`. Mark executable; wire into
-  `install.conf.yaml` with a `chmod +x` step + a guarded run step.
+- **Shell scripts in `scripts/`** are `sh`/`bash` and must pass `shellcheck`
+  (it's installed). Prefer `if/then/else` over `A && B || C`. Mark executable;
+  wire into `install.conf.yaml` with a `chmod +x` step + a guarded run step.
+  (Vendored skill helpers under `config/claude-skills/` are upstream content and
+  aren't held to this bar.)
 - **`config/codex/config.toml` is symlinked into `~/.codex/`, and Codex writes
   machine-specific state into it** (`[projects.*]`, `[marketplaces.*]`, `notify`,
   `[mcp_servers.node_repl]`, `[desktop]`). Only commit the **portable subset**

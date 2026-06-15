@@ -49,11 +49,11 @@ say "Git submodules (dotbot)"
 git -C "$REPO_DIR" submodule update --init --recursive && ok "submodules ready"
 
 # 5. App Store sign-in (mas needs the GUI signed in first) ─────────────────────
-say "Mac App Store sign-in (required for Amphetamine, Bear)"
-if mas account >/dev/null 2>&1; then ok "signed in as $(mas account)"; else
-  warn "Not signed into the App Store."
-  pause "Open the App Store app and sign in with your Apple ID."
-fi
+# Note: `mas` itself is installed by ./install (step 6), and mas 6.x has no CLI
+# sign-in/account command — so we can't probe; just prompt for the manual step
+# now, before brew bundle tries to install the `mas` apps.
+say "Mac App Store sign-in (required for the mas apps: Amphetamine, Bear)"
+pause "Open the App Store app and sign in with your Apple ID."
 
 # 5b. AI agent CLIs + repo deps (not brew-managed) ────────────────────────────
 say "Claude Code CLI (native installer — not in Brewfile)"
