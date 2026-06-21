@@ -1,8 +1,16 @@
 # User Preferences — Working Style
 
-## Cowork Files
+## Agent Workspace
 
-Your artifacts and scheduled tasks are stored at `/Users/amtagrwl/Projects`.
+Primary agent workspace: `/Users/amtagrwl/Workspace`.
+Shared project files: `/Users/amtagrwl/Workspace/Projects`.
+Shared artifacts/outputs: `/Users/amtagrwl/Workspace/Artifacts`.
+Local scheduled-task state: `/Users/amtagrwl/Workspace/Scheduled`.
+Cross-agent handoffs: `/Users/amtagrwl/Workspace/Handoffs`.
+
+Do not live-sync raw agent session stores (`~/.claude`, `~/.codex`,
+`~/.hermes`, or `~/Library/Application Support/Claude`). Use Bear and handoff
+notes for cross-machine continuity.
 
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
