@@ -80,3 +80,20 @@ on a problem a second pair of eyes would unblock.
   considered. Not "what do you want?" — that is the same menu in disguise.
   Drive toward a single recommendation together. Reserve option-menus for
   when I've explicitly asked to compare.
+
+## IndiaMART knowledge base (second brain)
+
+Amit keeps a persistent Bear wiki — his IndiaMART and personal second brain,
+read by humans and future agents. Conventions live at
+`/Users/amtagrwl/Workspace/Projects/IM Knowledge Base (Bear)/CLAUDE.md`.
+
+- Feed it. When a session produces durable knowledge about IndiaMART — a
+  decision, metric, incident, person, vendor, policy, or design — offer to
+  capture it. Use the `kb-capture` skill when available. Knowledge should not
+  die in a chat or repo.
+- An agent acting for Amit may read Gmail, Drive, Bear, Redash, project folders,
+  and past sessions to get context, find patterns, and verify facts. Destructive
+  KB edits such as merge/delete/bulk-rewrite need approval.
+- The nightly `kb-dream` routine is expected to improve the KB: re-verify
+  freshness, heal links, enrich important notes, and surface uncertainties for
+  Amit to answer.
