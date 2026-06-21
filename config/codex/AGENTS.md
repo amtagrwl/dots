@@ -3,6 +3,10 @@
 > Mirrors ~/.claude/CLAUDE.md so Codex follows the same working style as Claude
 > Code. Keep the two in sync when either changes.
 
+## Cowork Files
+
+Your artifacts and scheduled tasks are stored at `/Users/amtagrwl/Projects`.
+
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
 Context: I am ADHD, thrive under pressure, love deadlines, and hate working ahead

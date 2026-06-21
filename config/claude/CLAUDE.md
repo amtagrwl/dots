@@ -1,5 +1,9 @@
 # User Preferences — Working Style
 
+## Cowork Files
+
+Your artifacts and scheduled tasks are stored at `/Users/amtagrwl/Projects`.
+
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
 Context: I am ADHD, thrive under pressure, love deadlines, and hate working ahead
