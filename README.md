@@ -109,6 +109,14 @@ Notes:
 
 - Tailscale works with mosh: mosh's SSH bootstrap and encrypted UDP session both
   ride the tailnet. This avoids public UDP port-forwarding.
+- If mosh starts but shows `Nothing received from server on UDP port ...`, allow
+  the iMac mosh server through macOS Application Firewall:
+
+  ```bash
+  cd ~/git/dots
+  ./scripts/allow_mosh_firewall.sh
+  ```
+
 - `mosh` is for interactive shells/TUIs only. Keep using SSH for port forwarding,
   `scp`, `rsync`, and Git.
 
