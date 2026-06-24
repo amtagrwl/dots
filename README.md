@@ -67,7 +67,7 @@ himac
 Equivalent explicit command:
 
 ```bash
-mosh imac -- tmux new-session -A -s hermes
+mosh --server=/opt/homebrew/bin/mosh-server imac -- /opt/homebrew/bin/tmux new-session -A -s hermes
 ```
 
 Diagnostics before first use or after network changes:

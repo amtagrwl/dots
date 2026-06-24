@@ -3,6 +3,8 @@ set -euo pipefail
 
 host="${1:-${IMAC_TAILSCALE_HOST:-imac}}"
 session="${2:-${HERMES_TMUX_SESSION:-hermes}}"
+mosh_server="${IMAC_MOSH_SERVER:-/opt/homebrew/bin/mosh-server}"
+tmux_bin="${IMAC_TMUX_BIN:-/opt/homebrew/bin/tmux}"
 user_prefix="${IMAC_TAILSCALE_USER:-}"
 missing=0
 
@@ -74,17 +76,17 @@ fi
 
 if command -v ssh >/dev/null 2>&1; then
   printf '\nRemote bootstrap check over SSH (%s):\n' "$remote_target"
-  if ssh -o BatchMode=yes -o ConnectTimeout=5 "$remote_target" 'command -v mosh-server && command -v tmux && tmux -V' 2>&1; then
-    ok "remote has mosh-server + tmux"
+  if ssh -o BatchMode=yes -o ConnectTimeout=5 "$remote_target" "test -x '$mosh_server' && '$tmux_bin' -V" 2>&1; then
+    ok "remote has $mosh_server + $tmux_bin"
   else
-    warn "remote SSH bootstrap check failed/skipped. If normal ssh works interactively, this is usually just key auth/BatchMode."
+    warn "remote explicit Homebrew path check failed. Confirm mosh/tmux are installed on the iMac."
   fi
 fi
 
 cat <<EOF
 
 Connect command:
-  mosh $remote_target -- tmux new-session -A -s $session
+  mosh --server=$mosh_server $remote_target -- $tmux_bin new-session -A -s $session
 
 Shell shortcut after dotfiles install/source:
   himac

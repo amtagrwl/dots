@@ -104,9 +104,13 @@ function fixterm {
 #   export IMAC_TAILSCALE_HOST=imac
 #   export IMAC_TAILSCALE_USER=amtagrwl
 #   export HERMES_TMUX_SESSION=hermes
+#   export IMAC_MOSH_SERVER=/opt/homebrew/bin/mosh-server
+#   export IMAC_TMUX_BIN=/opt/homebrew/bin/tmux
 function himac {
     local host="${1:-${IMAC_TAILSCALE_HOST:-imac}}"
     local session="${2:-${HERMES_TMUX_SESSION:-hermes}}"
+    local mosh_server="${IMAC_MOSH_SERVER:-/opt/homebrew/bin/mosh-server}"
+    local tmux_bin="${IMAC_TMUX_BIN:-/opt/homebrew/bin/tmux}"
     local target="$host"
 
     if ! command -v mosh >/dev/null 2>&1; then
@@ -129,7 +133,9 @@ function himac {
         target="${IMAC_TAILSCALE_USER}@${target}"
     fi
 
-    mosh "$target" -- tmux new-session -A -s "$session"
+    # Use explicit Homebrew paths on the iMac because mosh starts mosh-server via
+    # non-interactive SSH, which may not have /opt/homebrew/bin on PATH.
+    mosh --server="$mosh_server" "$target" -- "$tmux_bin" new-session -A -s "$session"
     local rc=$?
     fixterm
     return "$rc"
