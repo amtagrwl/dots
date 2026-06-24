@@ -16,8 +16,11 @@ brew "eza"                 # modern ls (aliased in zshrc)
 brew "gh"
 brew "gnupg"
 brew "mas"
+brew "mosh"                # resilient interactive shell over Tailscale/UDP for laptop↔iMac TUI sessions
 brew "python@3.13"
 brew "starship"
+brew "tailscale"           # tailnet CLI + userspace networking for private MacBook↔iMac access
+brew "tmux"                # persistent remote shells; keeps Hermes alive across disconnects
 brew "uv"
 brew "zsh-autocomplete"
 

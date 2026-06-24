@@ -12,6 +12,14 @@ unsetopt MENU_COMPLETE
 # Configure zsh-autocomplete behavior (must be BEFORE sourcing)
 zstyle ':completion:*' menu select
 
+# Ghostty exports TERM=xterm-ghostty over SSH, but macOS terminfo for that entry can
+# miss kcbt/back-tab. zsh-autocomplete assumes it exists and prints:
+#   .autocomplete__key-bindings:33: terminfo[kcbt]: parameter not set
+# Downgrade TERM only for SSH shells before loading the plugin.
+if [[ -n "$SSH_CONNECTION" && "$TERM" == "xterm-ghostty" ]]; then
+    export TERM=xterm-256color
+fi
+
 # Source zsh-autocomplete plugin (installed via Homebrew)
 source "$(brew --prefix)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
@@ -82,6 +90,47 @@ function mkcd {
     else
         mkdir -p "$1" && cd "$1"
     fi
+}
+
+# Reset a terminal left in a bad TUI/mouse-reporting state after an SSH/mosh drop.
+# Useful when Ghostty starts printing mouse escape sequences like `;151;36M`.
+function fixterm {
+    printf '\033[?1000l\033[?1002l\033[?1003l\033[?1006l\033[?2004l\033[?25h\033[0m'
+    stty sane 2>/dev/null || true
+}
+
+# Attach to the iMac Hermes session over Tailscale using mosh + tmux.
+# Override per-machine in ~/.zshrc.local if needed:
+#   export IMAC_TAILSCALE_HOST=imac
+#   export IMAC_TAILSCALE_USER=amtagrwl
+#   export HERMES_TMUX_SESSION=hermes
+function himac {
+    local host="${1:-${IMAC_TAILSCALE_HOST:-imac}}"
+    local session="${2:-${HERMES_TMUX_SESSION:-hermes}}"
+    local target="$host"
+
+    if ! command -v mosh >/dev/null 2>&1; then
+        echo "mosh not installed. Run: brew bundle install --file ~/git/dots/Brewfile" >&2
+        return 127
+    fi
+
+    # Avoid depending on system DNS/MagicDNS: ask Tailscale for the peer IPv4 when available.
+    if command -v tailscale >/dev/null 2>&1; then
+        local tailscale_ip
+        tailscale_ip="$(tailscale ip -4 "$host" 2>/dev/null | head -n 1)"
+        if [[ -n "$tailscale_ip" ]]; then
+            target="$tailscale_ip"
+        fi
+    fi
+
+    if [[ -n "${IMAC_TAILSCALE_USER:-}" ]]; then
+        target="${IMAC_TAILSCALE_USER}@${target}"
+    fi
+
+    mosh "$target" -- tmux new-session -A -s "$session"
+    local rc=$?
+    fixterm
+    return "$rc"
 }
 
 # OpenTofu/Terraform: share downloaded providers across all worktrees

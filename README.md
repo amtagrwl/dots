@@ -46,6 +46,71 @@ ssh -T git@github.com   # should greet you by username
 1. Clone the repository.
 2. Run the install script: `./install` (This will link configs and install Brew packages from `Brewfile`)
 
+## Remote iMac Hermes session: Tailscale + mosh + tmux
+
+Use this for MacBook → iMac Hermes TUI work. `tmux` keeps the remote Hermes
+session alive; `mosh` makes the interactive terminal survive Wi-Fi drops,
+sleep/wake, and IP changes; Tailscale keeps the path private.
+
+Installed by `Brewfile`:
+
+- `tailscale` — tailnet access + `tailscale ip`/`tailscale ping` diagnostics
+- `mosh` — resilient UDP interactive shell; uses SSH only for bootstrap
+- `tmux` — persistent remote session (`hermes` session name by default)
+
+From the MacBook after `./install` / new shell:
+
+```bash
+himac
+```
+
+Equivalent explicit command:
+
+```bash
+mosh "$(tailscale ip -4 imac | head -n 1)" -- tmux new-session -A -s hermes
+```
+
+Diagnostics before first use or after network changes:
+
+```bash
+./scripts/check_mosh_tailscale.sh imac
+```
+
+First-run MacBook checklist if diagnostics show missing tools or SSH host-key errors:
+
+```bash
+cd ~/git/dots
+brew bundle install --file Brewfile
+ssh "$(tailscale ip -4 imac | head -n 1)"   # accept the iMac host key once
+```
+
+Expected iMac host-key fingerprints:
+
+- ED25519: `SHA256:Af4RDTYJelvGTskwG2KuE1LtzQrRBnDkFTYGTbX67Ns`
+- RSA: `SHA256:GYgJ2cZ9Iod5vJzEVQ8LdxRrk1csrQ3ib8wkK/WlwSo`
+- ECDSA: `SHA256:RN5VR+5AvHHZoXvtz0/jY5I7z7fF/zNQXmOIXtBayFg`
+
+If the iMac tailnet name or user differs, set overrides in `~/.zshrc.local`:
+
+```bash
+export IMAC_TAILSCALE_HOST=imac
+export IMAC_TAILSCALE_USER=amtagrwl
+export HERMES_TMUX_SESSION=hermes
+```
+
+If a dropped TUI leaves Ghostty printing mouse escape sequences like `;151;36M`, run:
+
+```bash
+fixterm
+```
+
+Notes:
+
+- Tailscale works with mosh: mosh's SSH bootstrap and encrypted UDP session both
+  ride the tailnet. This avoids public UDP port-forwarding.
+- `mosh` is for interactive shells/TUIs only. Keep using SSH for port forwarding,
+  `scp`, `rsync`, and Git.
+
 ## Managing Brew Packages
 
 This setup uses a **curated** `Brewfile`. **Edit it by hand** — do *not* run
