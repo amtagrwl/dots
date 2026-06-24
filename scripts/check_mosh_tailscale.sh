@@ -5,6 +5,7 @@ host="${1:-${IMAC_TAILSCALE_HOST:-imac}}"
 session="${2:-${HERMES_TMUX_SESSION:-hermes}}"
 mosh_server="${IMAC_MOSH_SERVER:-/opt/homebrew/bin/mosh-server}"
 tmux_bin="${IMAC_TMUX_BIN:-/opt/homebrew/bin/tmux}"
+tmux_conf="${IMAC_TMUX_CONF:-$HOME/.tmux.conf}"
 user_prefix="${IMAC_TAILSCALE_USER:-}"
 missing=0
 
@@ -86,7 +87,7 @@ fi
 cat <<EOF
 
 Connect command:
-  mosh --server=$mosh_server $remote_target -- $tmux_bin new-session -A -s $session
+  mosh --server=$mosh_server $remote_target -- $tmux_bin start-server \; source-file $tmux_conf \; new-session -A -s $session
 
 Shell shortcut after dotfiles install/source:
   himac

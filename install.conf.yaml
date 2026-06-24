@@ -10,9 +10,17 @@
       stderr: true
 
 - link:
+    ~/.zshenv:
+      force: true
+      path: zshenv
+
     ~/.zshrc:
       force: true
       path: zshrc
+
+    ~/.tmux.conf:
+      force: true
+      path: tmux.conf
 
     # Link Git settings managed by Dotbot (non-1Password related)
     ~/.gitconfig_dotfiles:

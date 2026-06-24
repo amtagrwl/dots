@@ -106,11 +106,13 @@ function fixterm {
 #   export HERMES_TMUX_SESSION=hermes
 #   export IMAC_MOSH_SERVER=/opt/homebrew/bin/mosh-server
 #   export IMAC_TMUX_BIN=/opt/homebrew/bin/tmux
+#   export IMAC_TMUX_CONF=$HOME/.tmux.conf
 function himac {
     local host="${1:-${IMAC_TAILSCALE_HOST:-imac}}"
     local session="${2:-${HERMES_TMUX_SESSION:-hermes}}"
     local mosh_server="${IMAC_MOSH_SERVER:-/opt/homebrew/bin/mosh-server}"
     local tmux_bin="${IMAC_TMUX_BIN:-/opt/homebrew/bin/tmux}"
+    local tmux_conf="${IMAC_TMUX_CONF:-$HOME/.tmux.conf}"
     local target="$host"
 
     if ! command -v mosh >/dev/null 2>&1; then
@@ -134,8 +136,9 @@ function himac {
     fi
 
     # Use explicit Homebrew paths on the iMac because mosh starts mosh-server via
-    # non-interactive SSH, which may not have /opt/homebrew/bin on PATH.
-    mosh --server="$mosh_server" "$target" -- "$tmux_bin" new-session -A -s "$session"
+    # non-interactive SSH, which may not have /opt/homebrew/bin on PATH. Source
+    # tmux config before attach so existing tmux servers pick up copy settings.
+    mosh --server="$mosh_server" "$target" -- "$tmux_bin" start-server \; source-file "$tmux_conf" \; new-session -A -s "$session"
     local rc=$?
     fixterm
     return "$rc"

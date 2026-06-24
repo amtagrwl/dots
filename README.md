@@ -67,7 +67,9 @@ himac
 Equivalent explicit command:
 
 ```bash
-mosh --server=/opt/homebrew/bin/mosh-server imac -- /opt/homebrew/bin/tmux new-session -A -s hermes
+mosh imac
+# or for the managed Hermes tmux session:
+mosh --server=/opt/homebrew/bin/mosh-server imac -- /opt/homebrew/bin/tmux start-server \; source-file ~/.tmux.conf \; new-session -A -s hermes
 ```
 
 Diagnostics before first use or after network changes:
@@ -104,6 +106,12 @@ If a dropped TUI leaves Ghostty printing mouse escape sequences like `;151;36M`,
 ```bash
 fixterm
 ```
+
+Copying text:
+
+- `~/.tmux.conf` keeps tmux mouse mode off by default, so normal Ghostty drag/select works in tmux panes.
+- If Hermes or another full-screen TUI captures the mouse anyway, hold **Shift** while dragging to force Ghostty native selection.
+- tmux keyboard copy still works: `Ctrl-b [` enters copy-mode, select text, then `Enter` or `y` copies to tmux/terminal clipboard when supported.
 
 Notes:
 
