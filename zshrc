@@ -114,8 +114,10 @@ function himac {
         return 127
     fi
 
-    # Avoid depending on system DNS/MagicDNS: ask Tailscale for the peer IPv4 when available.
-    if command -v tailscale >/dev/null 2>&1; then
+    # Prefer the SSH host alias so ~/.ssh/config can constrain 1Password to the
+    # iMac key. For ad-hoc hosts, avoid depending on DNS/MagicDNS by asking
+    # Tailscale for the peer IPv4 when available.
+    if [[ "$host" != "imac" ]] && command -v tailscale >/dev/null 2>&1; then
         local tailscale_ip
         tailscale_ip="$(tailscale ip -4 "$host" 2>/dev/null | head -n 1)"
         if [[ -n "$tailscale_ip" ]]; then

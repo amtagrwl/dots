@@ -19,6 +19,13 @@
       force: true # or relink: true
       path: gitconfig_dotfiles
 
+    # Public key selector for the iMac SSH host block managed by
+    # scripts/ensure_1password_ssh.sh. Public key only; private key remains in 1Password.
+    ~/.ssh/1password-imac-ssh.pub:
+      path: config/ssh/1password-imac-ssh.pub
+      create: true
+      force: true
+
     # Link global Ruff configuration
     ~/.config/ruff/ruff.toml:
       path: config/ruff/ruff.toml

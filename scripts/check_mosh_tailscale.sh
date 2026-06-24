@@ -64,6 +64,10 @@ else
 fi
 
 remote_target="$target_ip"
+if [ "$host" = "imac" ]; then
+  # Use the SSH alias so ~/.ssh/config can select only the iMac 1Password key.
+  remote_target="imac"
+fi
 if [ -n "$user_prefix" ]; then
   remote_target="$user_prefix@$remote_target"
 fi

@@ -67,7 +67,7 @@ himac
 Equivalent explicit command:
 
 ```bash
-mosh "$(tailscale ip -4 imac | head -n 1)" -- tmux new-session -A -s hermes
+mosh imac -- tmux new-session -A -s hermes
 ```
 
 Diagnostics before first use or after network changes:
@@ -81,7 +81,8 @@ First-run MacBook checklist if diagnostics show missing tools or SSH host-key er
 ```bash
 cd ~/git/dots
 brew bundle install --file Brewfile
-ssh "$(tailscale ip -4 imac | head -n 1)"   # accept the iMac host key once
+./install                                    # writes ~/.ssh/1password-imac-ssh.pub + iMac SSH block
+ssh imac                                    # accept the iMac host key once
 ```
 
 Expected iMac host-key fingerprints:

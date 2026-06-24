@@ -11,6 +11,7 @@ set -eu
 ssh_dir="$HOME/.ssh"
 ssh_config="$ssh_dir/config"
 agent_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+imac_pubkey="$ssh_dir/1password-imac-ssh.pub"
 
 mkdir -p "$ssh_dir"
 chmod 700 "$ssh_dir"
@@ -33,6 +34,29 @@ Host *
   [ "$leading_blank" = "1" ] && printf '\n' >> "$ssh_config"
   printf '%s\n' "$block" >> "$ssh_config"
   echo "✔ Added IdentityAgent directive."
+fi
+
+# iMac/Tailscale SSH: constrain 1Password's agent to the key authorized on the
+# iMac. Without this, SSH can offer too many 1Password keys and the iMac drops
+# the connection with "Too many authentication failures" before the right key is
+# tried. `IdentityFile` points at the public key only; 1Password supplies the
+# matching private key from its SSH agent.
+imac_marker="# iMac Tailscale SSH (managed by dotfiles)"
+if grep -qF "$imac_marker" "$ssh_config" 2>/dev/null; then
+  echo "✔ ~/.ssh/config already has the managed iMac SSH block."
+else
+  echo "🔧 Adding iMac Tailscale SSH block to ~/.ssh/config..."
+  cat >> "$ssh_config" <<EOF
+
+$imac_marker
+Host imac 100.72.234.15 imac.tailcad683.ts.net
+  HostName 100.72.234.15
+  User amtagrwl
+  IdentityAgent "$agent_sock"
+  IdentityFile "$imac_pubkey"
+  IdentitiesOnly yes
+EOF
+  echo "✔ Added iMac SSH block."
 fi
 
 if [ -S "$agent_sock" ]; then
