@@ -123,7 +123,11 @@ deliberately removed).
 2.  **Remove a package:** delete its line and move it into the `# Pruned` block so
     it isn't reinstalled by accident.
 3.  **Verify it parses:** `brew bundle list --file Brewfile`.
-4.  **Commit:**
+4.  **Install missing packages without upgrading everything:** `./install` uses
+    `brew bundle install --file Brewfile --no-upgrade` by design. Use
+    `brew bundle upgrade --file Brewfile` or `brew upgrade <name>` only when you
+    intentionally want upgrades.
+5.  **Commit:**
     ```bash
     git add Brewfile
     git commit -m "feat: add <package/app name> to Brewfile"

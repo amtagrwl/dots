@@ -2,10 +2,10 @@
 
 - shell:
     - command: |
-        if ! brew bundle install --file Brewfile; then
+        if ! brew bundle install --file Brewfile --no-upgrade; then
           echo "[brew bundle] some entries did not apply (sudo casks / mas not owned) — see 'brew bundle check' below"
         fi
-      description: Installing Brew packages from Brewfile...
+      description: Installing missing Brew packages from Brewfile without upgrading existing packages...
       stdout: true
       stderr: true
 

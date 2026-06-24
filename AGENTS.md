@@ -60,7 +60,10 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
 - **Change global working-style** → edit `config/claude/CLAUDE.md` AND
   `config/codex/AGENTS.md` together; they intentionally mirror each other
   (Codex's drops the Claude-specific bits).
-- **After changing links/scripts** → run `./install` (idempotent) to apply.
+- **After changing links/scripts** → run `./install` (idempotent) to apply. It
+  intentionally passes `brew bundle install --no-upgrade`; do not make normal
+  setup upgrade every existing package. Use explicit `brew bundle upgrade --file Brewfile`
+  or targeted `brew upgrade <name>` for deliberate upgrade work.
 
 ## Conventions & gotchas
 

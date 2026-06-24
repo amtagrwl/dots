@@ -5,6 +5,9 @@
 # NOTE: `brew bundle` continues past failures. After install, run
 #       `brew bundle check --file Brewfile` to catch anything that didn't apply
 #       (common causes: not signed into the App Store for `mas`, no Cursor for `vscode`).
+# NOTE: `./install` runs `brew bundle install --no-upgrade` so setup doesn't
+#       upgrade every already-installed formula/cask. Upgrade deliberately with
+#       `brew bundle upgrade --file Brewfile` or targeted `brew upgrade <name>`.
 # NOTE: `brew bundle` prefetches EVERY download before installing any package, so one
 #       slow/CDN-throttled cask (e.g. spotify) can stall the whole bundle for minutes with
 #       nothing installed yet. This is expected — not a hang.
