@@ -206,6 +206,7 @@
       }
     ]
   },
+  "enableWorkflows": true,
   "statusLine": {
     "type": "command",
     "command": "bash /Users/amtagrwl/.claude/statusline-command.sh"
@@ -221,11 +222,14 @@
       }
     }
   },
+  "ultracode": true,
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "tui": "fullscreen",
-  "enableWorkflows": true,
-  "ultracode": true
+  "model": "fable",
+  "advisorModel": "fable",
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark"
 }
