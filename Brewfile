@@ -38,8 +38,9 @@ brew "git-delta"           # rich git diff pager (configured in gitconfig_dotfil
 brew "zoxide"              # smarter cd (`z <dir>`; init in zshrc)
 brew "wget"                # the zshrc `wget -c` alias was dead without this
 
-# ── Cloud / IaC / DB (install on demand — not part of default setup) ─────────
-# Uncomment per machine when you actually need the GCP/IaC/DB work stack:
+# ── Cloud / IaC / DB ─────────────────────────────────────────────────────────
+brew "awscli"              # aws CLI; creds served from 1Password at runtime (see zshrc) — no plaintext ~/.aws/credentials
+# Install on demand — uncomment per machine when you actually need the GCP/IaC/DB work stack:
 #   brew "terraform"
 #   brew "opentofu"
 #   brew "cloud-sql-proxy"
