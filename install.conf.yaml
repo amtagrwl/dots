@@ -27,6 +27,15 @@
       force: true # or relink: true
       path: gitconfig_dotfiles
 
+    # Vendored runtime CLIs — the EXACT reviewed bytes live in-repo (bin/), never
+    # a curl|sudo install of mutable remote code. On PATH via ~/.local/bin (zshrc).
+    # mde = Simple Markdown Editor CLI (needs `node` >= 22.7, already in Brewfile).
+    # Update = re-fetch from the source, re-review the diff, replace bin/mde, commit.
+    ~/.local/bin/mde:
+      path: bin/mde
+      create: true
+      force: true
+
     # Public key selector for the iMac SSH host block managed by
     # scripts/ensure_1password_ssh.sh. Public key only; private key remains in 1Password.
     ~/.ssh/1password-imac-ssh.pub:

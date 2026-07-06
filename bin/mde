@@ -1,0 +1,532 @@
+#!/usr/bin/env node
+// mde — CLI for Simple Markdown Editor (Google Docs for markdown).
+// Zero dependencies. Install:  curl -fsSL <your-editor-url>/cli | sudo tee /usr/local/bin/mde >/dev/null && sudo chmod +x /usr/local/bin/mde
+import fs from 'node:fs'
+import path from 'node:path'
+import os from 'node:os'
+import readline from 'node:readline'
+import { spawn } from 'node:child_process'
+
+const CONFIG_DIR = process.env.MDE_CONFIG_DIR || path.join(os.homedir(), '.config', 'mde')
+const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json')
+const VERSIONS_PATH = path.join(CONFIG_DIR, 'versions.json') // docId -> last pulled version
+
+function loadConfig() {
+  try { return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8')) } catch { return {} }
+}
+function saveConfig(cfg) {
+  fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true })
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2) + '\n', { mode: 0o600 })
+}
+function loadVersions() {
+  try { return JSON.parse(fs.readFileSync(VERSIONS_PATH, 'utf8')) } catch { return {} }
+}
+function saveVersion(docId, version) {
+  if (!version) return
+  const all = loadVersions()
+  all[docId] = version
+  fs.mkdirSync(CONFIG_DIR, { recursive: true })
+  fs.writeFileSync(VERSIONS_PATH, JSON.stringify(all, null, 2) + '\n')
+}
+
+const cfg = loadConfig()
+const BASE = process.env.MDE_URL || cfg.url
+const TOKEN = process.env.MDE_TOKEN || cfg.token
+
+const [, , cmd, ...args] = process.argv
+
+const HELP = `mde — collaborative markdown docs, from the terminal
+
+Setup
+  mde login <url> [--token <token>]   sign in (interactive, or pass --token for scripts)
+  mde whoami                 show who you are
+
+Documents
+  mde ls [--json]            list your documents
+  mde new <title> [-f file]  create a doc (markdown from -f or stdin)
+                             works logged-out too: creates an anonymous doc at a secret link
+  mde cat <doc>              print a doc as markdown (pending suggestions excluded)
+  mde pull <doc> [-o file]   fetch a doc and remember its version for safe pushes
+  mde push <doc> -f file     replace a doc's content (also reads stdin)
+                             refuses if the doc changed since your last pull
+                             --force  overwrite anyway    --label "msg"  name the version
+  mde open <doc>             open a doc in the browser
+  mde share <doc> [role]     get a share link (view|comment|suggest|edit, default view)
+                             works on an edit-key share URL too, not just your own docs
+  mde rm <doc>               delete a doc (by id, share URL, or exact title)
+                             anonymous docs delete via their edit-key share URL
+
+Collaboration
+  mde comments <doc> [--json]           list comments (and suggestions)
+  mde comment <doc> <text> [--line N]   add a comment
+  mde reply <doc> <commentId> <text>    reply to a comment
+  mde resolve <doc> <commentId>         resolve a comment
+  mde suggest <doc> --replace <old> --with <new>   propose an edit (creates a delete+insert pair)
+  mde suggest <doc> --delete <text>                propose removing text
+  mde suggest <doc> --append <text>                propose adding text at the end
+  mde accept <doc> <id...>              accept suggestion(s)
+  mde reject <doc> <id...>              reject suggestion(s)
+  mde history <doc> [--json]            list saved versions
+  mde events <doc> [--since N] [--json]   list recent activity (comments, suggestions, edits, versions)
+  mde watch <doc> [--since N] [--json]    follow activity live (long-polls; Ctrl-C to stop)
+                             retries network/5xx blips; exits non-zero on a permanent
+                             error (auth, not found, bad request)
+
+<doc> may be a doc id, a share URL, or a (partial) title.
+Share URLs work without login: mde cat "https://host/d/abc?key=…"
+
+Environment
+  MDE_URL, MDE_TOKEN         override the saved server/token (great for CI and agents)
+  MDE_AUTHOR                 attribution name when acting via a share URL without a token
+                             (also: --author <name> on push/comment/reply/suggest)
+                             with no name set, mde asks once and saves it; in scripts it
+                             signs as "agent". Names are marked "guest" and can't match an
+                             account username — use the account's token to write as it.
+`
+
+
+// flags each command accepts; anything else is an error, not silence
+const FLAGS = {
+  login: ['--token'],
+  ls: ['--json'], list: ['--json'],
+  new: ['-f', '--file'], create: ['-f', '--file'],
+  pull: ['-o', '--out'],
+  push: ['-f', '--file', '--force', '--label', '--author'],
+  comments: ['--json'],
+  comment: ['--line', '--author'],
+  reply: ['--author'],
+  suggest: ['--replace', '--with', '--delete', '--append', '--author'],
+  history: ['--json'],
+  events: ['--since', '--json'],
+  watch: ['--since', '--json'],
+}
+const BOOL_FLAGS = new Set(['--json', '--force'])
+
+main().catch(err => { console.error(`error: ${err.message}`); process.exit(1) })
+
+async function main() {
+  checkFlags(FLAGS[cmd] || [])
+  switch (cmd) {
+    case 'login': return login()
+    case 'whoami': return whoami()
+    case 'ls': case 'list': return ls()
+    case 'new': case 'create': return createDoc()
+    case 'cat': return cat()
+    case 'pull': return pull()
+    case 'push': return push()
+    case 'open': return openDoc()
+    case 'share': return share()
+    case 'rm': case 'delete': return rm()
+    case 'comments': return comments()
+    case 'comment': return comment()
+    case 'reply': return reply()
+    case 'resolve': return resolve()
+    case 'suggest': return suggest()
+    case 'accept': return decide('accept')
+    case 'reject': return decide('reject')
+    case 'history': return history()
+    case 'events': return events()
+    case 'watch': return watch()
+    case 'help': case '--help': case '-h':
+      console.log(HELP); return
+    case undefined:
+      console.log(HELP); process.exit(1); return
+    default:
+      console.error(`unknown command: ${cmd}\n`)
+      console.log(HELP)
+      process.exit(1)
+  }
+}
+
+// ---------- helpers ----------
+function checkFlags(allowed) {
+  for (const a of args) {
+    if (a.startsWith('-') && !allowed.includes(a)) {
+      throw new Error(`unknown flag for ${cmd || 'mde'}: ${a}  (see: mde help)`)
+    }
+  }
+}
+function flag(name) {
+  const i = args.indexOf(name)
+  if (i === -1) return null
+  if (BOOL_FLAGS.has(name)) return true
+  return args[i + 1] ?? null
+}
+function positional() {
+  const out = []
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith('-')) { if (!BOOL_FLAGS.has(args[i])) i++; continue }
+    out.push(args[i])
+  }
+  return out
+}
+function authorOf() {
+  return flag('--author') || process.env.MDE_AUTHOR || cfg.author || null
+}
+
+// Attribution when writing via a share link without a token: use --author /
+// MDE_AUTHOR / saved name; otherwise ask once (interactive) or sign as "agent".
+// Account usernames are off-limits without their token — the server rejects those.
+async function guestAuthor() {
+  const known = authorOf()
+  if (known) return known
+  if (!process.stdin.isTTY) return 'agent'
+  const name = await ask('Your name (shown on your comments and suggestions): ')
+  if (!name) return 'agent'
+  cfg.author = name
+  saveConfig(cfg)
+  console.error(`(saved to ${CONFIG_PATH} — override with --author or MDE_AUTHOR)`)
+  return name
+}
+
+async function req(base, p, { method = 'GET', body, key, raw } = {}) {
+  const headers = {}
+  if (TOKEN) headers.authorization = `Bearer ${TOKEN}`
+  if (key) headers['x-share-key'] = key
+  if (body !== undefined) headers['content-type'] = 'application/json'
+  const res = await fetch(`${base}/api${p}`, { method, headers, body: body !== undefined ? JSON.stringify(body) : undefined })
+  if (raw && res.ok) return { text: await res.text(), version: res.headers.get('x-doc-version') }
+  const isJson = res.headers.get('content-type')?.includes('json')
+  const data = isJson ? await res.json() : { error: await res.text() }
+  if (!res.ok) {
+    const err = new Error(data.error || `${res.status} ${res.statusText}`)
+    err.status = res.status
+    err.data = data
+    throw err
+  }
+  return data
+}
+
+function needBase() {
+  if (!BASE) throw new Error('not logged in — run: mde login <url>  (or set MDE_URL)')
+  return BASE.replace(/\/+$/, '')
+}
+
+// Resolve a <doc> argument: id, share URL, or title substring.
+async function resolveDoc(ref) {
+  if (!ref) throw new Error('which doc? pass an id, share URL, or title')
+  try {
+    const u = new URL(ref)
+    const m = u.pathname.match(/\/d\/([A-Za-z0-9_-]+)/)
+    if (m) return { base: u.origin, id: m[1], key: u.searchParams.get('key') }
+  } catch { /* not a URL */ }
+  const base = needBase()
+  if (/^[A-Za-z0-9_-]{10}$/.test(ref)) return { base, id: ref, key: null }
+  const { docs } = await req(base, '/docs')
+  const matches = docs.filter(d => d.title.toLowerCase().includes(ref.toLowerCase()))
+  if (matches.length === 1) return { base, id: matches[0].id, key: null }
+  if (matches.length === 0) throw new Error(`no doc matching “${ref}”`)
+  throw new Error(`“${ref}” is ambiguous:\n` + matches.map(d => `  ${d.id}  ${d.title}`).join('\n'))
+}
+
+function ask(question, { hidden } = {}) {
+  return new Promise(res => {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stderr })
+    if (hidden) {
+      process.stderr.write(question)
+      const onData = (ch) => { if (ch.toString().includes('\n')) process.stderr.write('\n') }
+      process.stdin.on('data', onData)
+      rl.question('', a => { process.stdin.off('data', onData); rl.close(); res(a.trim()) })
+      rl._writeToOutput = () => {}
+    } else {
+      rl.question(question, a => { rl.close(); res(a.trim()) })
+    }
+  })
+}
+
+function readInput(file) {
+  if (file) return fs.readFileSync(file, 'utf8')
+  if (!process.stdin.isTTY) return fs.readFileSync(0, 'utf8')
+  return null
+}
+
+function ago(ts) {
+  const m = Math.floor((Date.now() - ts) / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  return `${Math.floor(h / 24)}d ago`
+}
+
+// ---------- commands ----------
+async function login() {
+  let url = positional()[0] || cfg.url
+  if (!url) url = await ask('Editor URL (e.g. https://simplemarkdowneditor.com): ')
+  url = url.replace(/\/+$/, '')
+  if (!/^https?:\/\//.test(url)) url = 'https://' + url
+  const token = flag('--token') || await ask('API token (account menu → API token): ', { hidden: true })
+  const res = await fetch(`${url}/api/me`, { headers: { authorization: `Bearer ${token}` } })
+  if (!res.ok) throw new Error('that token didn’t work')
+  const { user } = await res.json()
+  saveConfig({ url, token })
+  console.log(`logged in as ${user.username} at ${url}`)
+}
+
+async function whoami() {
+  const base = needBase()
+  const { user } = await req(base, '/me')
+  console.log(`${user.username} @ ${base}`)
+}
+
+async function ls() {
+  const base = needBase()
+  const { docs } = await req(base, '/docs')
+  if (flag('--json')) { console.log(JSON.stringify(docs, null, 2)); return }
+  if (!docs.length) { console.log('no documents yet — try: mde new "My doc"'); return }
+  for (const d of docs) {
+    console.log(`${d.id}  ${pad(ago(d.updated_at), 12)}  ${d.title}`)
+  }
+}
+function pad(s, n) { return String(s).padEnd(n) }
+
+async function createDoc() {
+  const title = positional()[0] || ''
+  const content = readInput(flag('-f') || flag('--file')) || ''
+  if (TOKEN) {
+    const base = needBase()
+    const { doc } = await req(base, '/docs', { method: 'POST', body: { title: title || 'Untitled', content } })
+    console.log(`${doc.url}`)
+    return
+  }
+  // no token? no problem — mint an anonymous doc that lives at its secret link
+  const base = (BASE || 'https://simplemarkdowneditor.com').replace(/\/+$/, '')
+  const res = await fetch(`${base}/new`, { redirect: 'manual' })
+  const loc = res.headers.get('location')
+  if (!loc) throw new Error(`could not create a doc at ${base}/new (${res.status})`)
+  const url = `${base}${loc}`
+  const parsed = new URL(url)
+  const docId = parsed.pathname.split('/')[2]
+  const key = parsed.searchParams.get('key')
+  if (content) await req(base, `/docs/${docId}/content`, { method: 'PUT', key, body: { content } })
+  if (title) await req(base, `/docs/${docId}`, { method: 'PATCH', key, body: { title } })
+  console.log(url)
+}
+
+async function cat() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const { text } = await req(base, `/docs/${id}/content`, { key, raw: true })
+  process.stdout.write(text.endsWith('\n') || text === '' ? text : text + '\n')
+}
+
+async function pull() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const { text, version } = await req(base, `/docs/${id}/content`, { key, raw: true })
+  saveVersion(id, version)
+  const out = flag('-o') || flag('--out')
+  if (out) {
+    fs.writeFileSync(out, text)
+    console.log(`pulled ${id} → ${out} (version ${version})`)
+  } else {
+    process.stdout.write(text.endsWith('\n') || text === '' ? text : text + '\n')
+  }
+}
+
+async function push() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const content = readInput(flag('-f') || flag('--file'))
+  if (content == null) throw new Error('pass -f <file> or pipe markdown on stdin')
+  const body = { content }
+  const label = flag('--label')
+  if (label) body.label = label
+  if (!TOKEN) body.author = await guestAuthor()
+  // safe by default: if we pulled this doc before, only push on top of that version
+  const tracked = loadVersions()[id]
+  if (tracked && !flag('--force')) body.baseVersion = tracked
+  try {
+    const { version } = await req(base, `/docs/${id}/content`, { method: 'PUT', key, body })
+    if (tracked) saveVersion(id, version) // keep the pull cache current
+    console.log('pushed')
+  } catch (err) {
+    if (err.status !== 409 || !err.data?.currentVersion) throw err
+    throw new Error(`the doc changed since your last pull (now at version ${err.data.currentVersion}).
+  mde pull ${id}         fetch the latest and reapply your changes
+  mde push ${id} --force overwrite it anyway`)
+  }
+}
+
+async function openDoc() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const url = `${base}/d/${id}${key ? `?key=${key}` : ''}`
+  const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open'
+  spawn(opener, [url], { detached: true, stdio: 'ignore' }).unref()
+  console.log(url)
+}
+
+async function share() {
+  const pos = positional()
+  const { base, id, key } = await resolveDoc(pos[0])
+  const role = pos[1] || 'view'
+  const { share } = await req(base, `/docs/${id}/shares`, { method: 'POST', key, body: { role } })
+  console.log(share.url)
+}
+
+async function rm() {
+  const ref = positional()[0]
+  const { base, id, key } = await resolveDoc(ref)
+  // deletion is irreversible from here — don't accept fuzzy title matches
+  if (!/^[A-Za-z0-9_-]{10}$/.test(ref) && !/^https?:\/\//.test(ref)) {
+    const { docs } = await req(base, '/docs')
+    const doc = docs.find(d => d.id === id)
+    if (doc && doc.title.toLowerCase() !== ref.toLowerCase()) {
+      throw new Error(`“${ref}” only partially matches “${doc.title}” — to delete it, use the exact title or: mde rm ${id}`)
+    }
+  }
+  await req(base, `/docs/${id}`, { method: 'DELETE', key, body: {} })
+  console.log('deleted')
+}
+
+async function comments() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const [{ comments }, { suggestions }] = await Promise.all([
+    req(base, `/docs/${id}/comments`, { key }),
+    req(base, `/docs/${id}/suggestions`, { key }),
+  ])
+  if (flag('--json')) { console.log(JSON.stringify({ comments, suggestions }, null, 2)); return }
+  if (suggestions.length) {
+    console.log('suggestions:')
+    for (const s of suggestions) {
+      console.log(`  ${s.id}  [${s.type === 'insert' ? '+' : '-'}] ${s.author}, ${ago(s.createdAt)}: ${JSON.stringify(trim(s.text))}`)
+    }
+    console.log('')
+  }
+  const open = comments.filter(c => !c.resolved)
+  const resolved = comments.filter(c => c.resolved)
+  if (!open.length && !suggestions.length) console.log('no open comments')
+  for (const c of open) {
+    const where = c.quote ? `  re: ${JSON.stringify(trim(c.quote))}` : ''
+    console.log(`${c.id}  ${c.author}, ${ago(c.createdAt)}${where}`)
+    console.log(`    ${c.body}`)
+    for (const r of c.replies) console.log(`    ↳ ${r.author}: ${r.body}`)
+  }
+  if (resolved.length) console.log(`(${resolved.length} resolved)`)
+}
+function trim(s) { return s.length > 60 ? s.slice(0, 60) + '…' : s }
+
+async function comment() {
+  const pos = positional()
+  const { base, id, key } = await resolveDoc(pos[0])
+  const body = pos.slice(1).join(' ')
+  if (!body) throw new Error('what should the comment say?')
+  const line = flag('--line')
+  const payload = { body }
+  if (line) payload.line = Number(line)
+  if (!TOKEN) payload.author = await guestAuthor()
+  const { id: cid, anchored } = await req(base, `/docs/${id}/comments`, { method: 'POST', key, body: payload })
+  console.log(`commented (${cid})${anchored === false ? ' — note: that line could not be anchored, added as a doc-level comment' : ''}`)
+}
+
+async function reply() {
+  const pos = positional()
+  const { base, id, key } = await resolveDoc(pos[0])
+  const cid = pos[1]
+  const body = pos.slice(2).join(' ')
+  if (!cid || !body) throw new Error('usage: mde reply <doc> <commentId> <text>')
+  const payload = { body }
+  if (!TOKEN) payload.author = await guestAuthor()
+  await req(base, `/docs/${id}/comments/${cid}/replies`, { method: 'POST', key, body: payload })
+  console.log('replied')
+}
+
+async function resolve() {
+  const pos = positional()
+  const { base, id, key } = await resolveDoc(pos[0])
+  if (!pos[1]) throw new Error('usage: mde resolve <doc> <commentId>')
+  await req(base, `/docs/${id}/comments/${pos[1]}/resolve`, { method: 'POST', key, body: {} })
+  console.log('resolved')
+}
+
+async function suggest() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const replace = flag('--replace')
+  const del = flag('--delete')
+  const append = flag('--append')
+  let body
+  if (replace != null) {
+    const text = flag('--with')
+    if (text == null) throw new Error('usage: mde suggest <doc> --replace <old> --with <new>')
+    body = { type: 'replace', find: replace, text }
+  } else if (del != null) {
+    body = { type: 'delete', find: del }
+  } else if (append != null) {
+    body = { type: 'insert', at: 'end', text: append }
+  } else {
+    throw new Error('pass --replace <old> --with <new>, --delete <text>, or --append <text>')
+  }
+  if (!TOKEN) body.author = await guestAuthor()
+  const { ids } = await req(base, `/docs/${id}/suggestions`, { method: 'POST', key, body })
+  if (body.type === 'replace' && ids.length === 2) {
+    console.log(`suggested replace (delete ${ids[0]} + insert ${ids[1]}) — accept both to apply`)
+  } else {
+    console.log(`suggested (${ids.join(', ')}) — pending review`)
+  }
+}
+
+async function decide(action) {
+  const pos = positional()
+  const { base, id, key } = await resolveDoc(pos[0])
+  const sids = pos.slice(1)
+  if (!sids.length) throw new Error(`usage: mde ${action} <doc> <suggestionId...>`)
+  for (const sid of sids) {
+    await req(base, `/docs/${id}/suggestions/${sid}`, { method: 'POST', key, body: { action } })
+  }
+  console.log(`${action}ed ${sids.length > 1 ? sids.length + ' suggestions' : sids[0]}`)
+}
+
+async function events() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const since = Number(flag('--since') || 0)
+  const { events } = await req(base, `/docs/${id}/events?since=${since}`, { key })
+  if (flag('--json')) { console.log(JSON.stringify(events, null, 2)); return }
+  if (!events.length) { console.log('no activity yet'); return }
+  for (const e of events) console.log(fmtEvent(e))
+}
+
+async function watch() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const json = !!flag('--json')
+  // without --since, start from now: probe the latest seq instead of replaying history
+  let since = flag('--since') != null
+    ? Number(flag('--since'))
+    : (await req(base, `/docs/${id}/events?since=1000000000`, { key })).latest
+  let backoff = 1000
+  process.on('SIGINT', () => process.exit(0))
+  for (;;) {
+    try {
+      const { events, latest } = await req(base, `/docs/${id}/events?since=${since}&wait=25`, { key })
+      for (const e of events) console.log(json ? JSON.stringify(e) : fmtEvent(e))
+      since = latest
+      backoff = 1000
+    } catch (err) {
+      // Permanent errors (bad auth, gone, bad request) won't fix themselves —
+      // fail fast instead of hammering the server forever. Only network blips,
+      // rate limits (429) and server errors (5xx) are worth retrying.
+      if (err.status && err.status !== 429 && err.status < 500) {
+        console.error(`watch: ${err.message}`)
+        process.exit(1)
+      }
+      console.error(`watch: ${err.message} — retrying in ${backoff / 1000}s`)
+      await new Promise(r => setTimeout(r, backoff))
+      backoff = Math.min(backoff * 2, 30_000)
+    }
+  }
+}
+
+function fmtEvent(e) {
+  const p = e.payload || {}
+  const detail = p.label != null ? JSON.stringify(p.label)
+    : p.suggestion || p.suggestions?.join(', ') || p.comment
+    || (p.revision != null ? `rev ${p.revision}` : '')
+  return `${new Date(e.ts).toLocaleTimeString()}  #${String(e.seq).padEnd(4)}  ${pad(e.type, 20)}  ${e.actor || ''}${detail ? `  ${detail}` : ''}`
+}
+
+async function history() {
+  const { base, id, key } = await resolveDoc(positional()[0])
+  const { revisions } = await req(base, `/docs/${id}/revisions`, { key })
+  if (flag('--json')) { console.log(JSON.stringify(revisions, null, 2)); return }
+  if (!revisions.length) { console.log('no saved versions yet'); return }
+  for (const r of revisions) {
+    const label = r.label ? `  “${r.label}”` : ''
+    console.log(`${String(r.id).padStart(6)}  ${new Date(r.created_at).toLocaleString()}  ${r.authors.join(', ')}${label}`)
+  }
+}
