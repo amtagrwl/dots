@@ -221,8 +221,14 @@
       }
     }
   },
+  "advisorModel": "fable",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "agentPushNotifEnabled": true
+  "enableWorkflows": true,
+  "ultracode": true
 }
