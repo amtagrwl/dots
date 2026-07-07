@@ -36,28 +36,33 @@ Host *
   echo "✔ Added IdentityAgent directive."
 fi
 
-# iMac/Tailscale SSH: constrain 1Password's agent to the key authorized on the
-# iMac. Without this, SSH can offer too many 1Password keys and the iMac drops
-# the connection with "Too many authentication failures" before the right key is
-# tried. `IdentityFile` points at the public key only; 1Password supplies the
-# matching private key from its SSH agent.
-imac_marker="# iMac Tailscale SSH (managed by dotfiles)"
+# iMac/Tailscale SSH: a dedicated agents key (2026-07-07) — NOT the 1Password
+# agent. Unattended agents kept stalling on Touch ID ("agent refused
+# operation") whenever the 1P agent was locked, so `ssh imac` now bypasses it
+# entirely: IdentityAgent none + a plain machine-local keypair
+# (~/.ssh/agents_ed25519), whose public half is tailnet-restricted in the
+# iMac's authorized_keys. The private key is machine-local and never in this
+# repo; on a new Mac generate one (ssh-keygen -t ed25519 -f
+# ~/.ssh/agents_ed25519 -N "") and append the .pub to the iMac's
+# ~/.ssh/authorized_keys (prefix: from="100.64.0.0/10").
+imac_marker="# iMac Tailscale SSH (managed by dotfiles"
 if grep -qF "$imac_marker" "$ssh_config" 2>/dev/null; then
   echo "✔ ~/.ssh/config already has the managed iMac SSH block."
 else
   echo "🔧 Adding iMac Tailscale SSH block to ~/.ssh/config..."
   cat >> "$ssh_config" <<EOF
 
-$imac_marker
+$imac_marker; agents key since 2026-07-07)
 Host imac 100.72.234.15 imac.tailcad683.ts.net
   HostName 100.72.234.15
   User amtagrwl
-  IdentityAgent "$agent_sock"
-  IdentityFile "$imac_pubkey"
+  IdentityAgent none
+  IdentityFile ~/.ssh/agents_ed25519
   IdentitiesOnly yes
 EOF
   echo "✔ Added iMac SSH block."
 fi
+[ -f "$HOME/.ssh/agents_ed25519" ] || echo "⚠  ~/.ssh/agents_ed25519 missing — generate it and authorize on the iMac (see comment above)."
 
 if [ -S "$agent_sock" ]; then
   echo "✔ 1Password SSH agent socket is live."

@@ -85,7 +85,8 @@ First-run MacBook checklist if diagnostics show missing tools or SSH host-key er
 ```bash
 cd ~/git/dots
 brew bundle install --file Brewfile
-./install                                    # writes ~/.ssh/1password-imac-ssh.pub + iMac SSH block
+./install                                    # writes the iMac SSH block (agents key, not 1P agent)
+ssh-keygen -t ed25519 -f ~/.ssh/agents_ed25519 -N ""  # then append the .pub (with from="100.64.0.0/10") to iMac ~/.ssh/authorized_keys
 ssh imac                                    # accept the iMac host key once
 ```
 
