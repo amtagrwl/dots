@@ -57,6 +57,7 @@ brew "shellcheck"
 brew "hadolint"
 brew "exiftool"
 brew "poppler"             # pdftotext et al.
+brew "pandoc"              # HTML→GFM markdown conversion for email-knowledge-base ingest (preserves tables)
 brew "oasdiff"             # OpenAPI diff
 
 # ── Core apps ────────────────────────────────────────────────────────────────
