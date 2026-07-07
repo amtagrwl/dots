@@ -41,12 +41,13 @@ brew "coreutils"           # GNU tools (gtimeout, gdate, …) — macOS ships no
 
 # ── Cloud / IaC / DB ─────────────────────────────────────────────────────────
 brew "awscli"              # aws CLI; creds served from 1Password at runtime (see zshrc) — no plaintext ~/.aws/credentials
+brew "postgresql@17"       # GBrain brain engine (localhost-only; service started on the iMac only — `brew services start postgresql@17`)
+brew "pgvector"            # pgvector extension for postgresql@17 — GBrain embeddings/hybrid search
 # Install on demand — uncomment per machine when you actually need the GCP/IaC/DB work stack:
 #   brew "terraform"
 #   brew "opentofu"
 #   brew "cloud-sql-proxy"
 #   brew "cloudflared"
-#   brew "postgresql@17"
 #   brew "libpq"
 #   brew "mcp-toolbox"
 
