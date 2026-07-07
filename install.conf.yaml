@@ -67,26 +67,6 @@
       create: true
       force: true
 
-    # Link Claude Code agent-browser skill
-    ~/.agents/skills/agent-browser:
-      path: config/claude-skills/agent-browser
-      create: true
-      force: true
-    ~/.claude/skills/agent-browser:
-      path: config/claude-skills/agent-browser
-      create: true
-      force: true
-
-    # Link custom Claude Code skills
-    ~/.claude/skills/clean-storage:
-      path: config/claude-skills/clean-storage
-      create: true
-      force: true
-    ~/.claude/skills/langfuse:
-      path: config/claude-skills/langfuse
-      create: true
-      force: true
-
     # Link Claude Code global config (CLAUDE.md, settings, statusline)
     ~/.claude/CLAUDE.md:
       path: config/claude/CLAUDE.md
@@ -116,6 +96,37 @@
 
 # Shell commands to set up configurations
 - shell:
+    # Agent skills canon lives in the Syncthing-synced Workspace
+    # (~/Workspace/Tools/skills). Machine-local symlinks point INTO it —
+    # never the other direction (symlinks inside the synced tree dangle on
+    # the other machine). Token dir for the 1Password service account is
+    # created here; the token itself is installed manually from 1Password.
+    - command: |
+        install -d -m 700 "$HOME/.config/agents"
+        CANON="$HOME/Workspace/Tools/skills"
+        if [ -d "$CANON" ]; then
+          mkdir -p "$HOME/.agents" "$HOME/.claude/skills"
+          if [ -d "$HOME/.agents/skills" ] && [ ! -L "$HOME/.agents/skills" ]; then
+            mv "$HOME/.agents/skills" "$HOME/.agents/skills.pre-workspace-$(date +%Y%m%d)"
+          fi
+          ln -sfn "$CANON" "$HOME/.agents/skills"
+          for s in "$CANON"/*/; do
+            n="$(basename "$s")"
+            t="$HOME/.claude/skills/$n"
+            if [ -d "$t" ] && [ ! -L "$t" ]; then
+              echo "[skip] $n: real dir at $t (not overwriting)"
+            else
+              ln -sfn "$CANON/$n" "$t"
+            fi
+          done
+          find "$HOME/.claude/skills" -type l ! -exec test -e {} \; -delete 2>/dev/null || true
+        else
+          echo "[skip] agent skills wiring: $CANON not found (Workspace not synced yet?)"
+        fi
+      description: Wire agent skill dirs (~/.agents/skills, ~/.claude/skills) at the Workspace canon
+      stdout: true
+      stderr: true
+
     - command: chmod +x scripts/ensure_gitconfig_include.sh
       description: Make ensure_gitconfig_include script executable
       quiet: true
