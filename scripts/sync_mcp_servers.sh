@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 # sync_mcp_servers.sh — Sync MCP servers from canonical config to all AI tools.
 # Reads config/mcp/servers.json, writes tool-specific configs for:
-#   Claude Code, Cursor, Codex, VS Code
-# Idempotent. Preserves non-canonical entries. Tracks managed servers via manifest.
+#   Claude Code (~/.claude.json mcpServers key — direct JSON round-trip, backed up first)
+#   Codex (config/codex/config.toml [mcp_servers.*] tables — direct text patch, touches
+#          ONLY the tables for canonical server names; node_repl, its env block, notify,
+#          and [plugins.*] are Codex.app-generated and are never touched)
+#   Cursor, VS Code (best-effort, non-canonical tools)
+# Idempotent. Preserves non-canonical/manually-added entries. Tracks managed
+# servers via manifest so removing a server from servers.json removes it everywhere.
 set -euo pipefail
 
 # dotbot runs shell steps non-interactively, so ~/.zshrc PATH edits don't apply.
@@ -11,6 +16,7 @@ export PATH="$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVERS_JSON="$SCRIPT_DIR/config/mcp/servers.json"
+CODEX_CONFIG="$SCRIPT_DIR/config/codex/config.toml"
 MANIFEST="$HOME/.config/dots-mcp-managed.json"
 
 if [ ! -f "$SERVERS_JSON" ]; then
@@ -55,53 +61,90 @@ for prev in "${PREV_MANAGED[@]+"${PREV_MANAGED[@]}"}"; do
     SERVERS_TO_REMOVE+=("$prev")
   fi
 done
+MCP_TO_REMOVE="${SERVERS_TO_REMOVE[*]+"${SERVERS_TO_REMOVE[*]}"}"
 
 # ─── Claude Code ────────────────────────────────────────────────────────────
+# Direct JSON round-trip on ~/.claude.json — this file is large, live, and
+# machine-local (app state, project cache, etc). We touch ONLY the top-level
+# "mcpServers" key: merge canonical servers in, drop previously-managed ones
+# that were removed from servers.json, leave every other key byte-identical,
+# and leave any manually-added (untracked) server entries alone. Back up
+# first since a live Claude Code session may also write this file.
 sync_claude() {
-  if ! command -v claude &>/dev/null; then
-    echo "  [skip] claude not installed"
+  local target="$HOME/.claude.json"
+  if [ ! -f "$target" ]; then
+    echo "  [skip] $target not found"
     return
   fi
 
-  # Remove servers no longer in canonical config
-  for name in "${SERVERS_TO_REMOVE[@]+"${SERVERS_TO_REMOVE[@]}"}"; do
-    echo "  [remove] $name"
-    claude mcp remove -s user "$name" 2>/dev/null || true
-  done
+  CLAUDE_JSON="$target" SERVERS_JSON="$SERVERS_JSON" MCP_TO_REMOVE="$MCP_TO_REMOVE" \
+    python3 - <<'PYEOF'
+import json
+import os
+import shutil
+import sys
 
-  # Add/update each canonical server
-  python3 -c "
-import json, subprocess, sys
+TARGET = os.environ["CLAUDE_JSON"]
+SERVERS_JSON = os.environ["SERVERS_JSON"]
+TO_REMOVE = set(n for n in os.environ.get("MCP_TO_REMOVE", "").split() if n)
 
-with open('$SERVERS_JSON') as f:
-    servers = json.load(f)['servers']
+with open(SERVERS_JSON) as f:
+    servers = json.load(f)["servers"]
+
+
+def build_entry(cfg):
+    transport = cfg.get("transport", "stdio")
+    if transport == "stdio":
+        return {
+            "type": "stdio",
+            "command": cfg["command"],
+            "args": cfg.get("args", []),
+            "env": {},
+        }
+    entry = {"type": transport, "url": cfg["url"]}
+    auth = cfg.get("auth", {})
+    if auth.get("type") == "bearer":
+        entry["headers"] = {"Authorization": "Bearer ${%s}" % auth["env_var"]}
+    return entry
+
+
+with open(TARGET) as f:
+    data = json.load(f)
+
+old_mcp = data.get("mcpServers", {})
+new_mcp = dict(old_mcp)  # preserve any untracked/manually-added entries
 
 for name, cfg in servers.items():
-    transport = cfg.get('transport', 'stdio')
+    new_mcp[name] = build_entry(cfg)
 
-    # Remove first to ensure clean state
-    subprocess.run(['claude', 'mcp', 'remove', '-s', 'user', name],
-                   capture_output=True)
+for name in TO_REMOVE - set(servers.keys()):
+    new_mcp.pop(name, None)
 
-    cmd = ['claude', 'mcp', 'add', '-s', 'user', '-t', transport]
+if new_mcp == old_mcp:
+    print("  [ok] no changes (mcpServers already in sync)")
+    sys.exit(0)
 
-    if transport == 'stdio':
-        cmd += [name, cfg['command']] + cfg.get('args', [])
-    elif transport in ('http', 'sse'):
-        url = cfg['url']
-        # Positional args must come before -H (which is variadic)
-        cmd += [name, url]
-        auth = cfg.get('auth', {})
-        if auth.get('type') == 'bearer':
-            env_var = auth['env_var']
-            cmd += ['-H', f'Authorization: Bearer \${{{env_var}}}']
+added = sorted(set(new_mcp) - set(old_mcp))
+removed = sorted(set(old_mcp) - set(new_mcp))
+changed = sorted(
+    n for n in (set(new_mcp) & set(old_mcp)) if old_mcp[n] != new_mcp[n]
+)
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    status = 'ok' if result.returncode == 0 else 'FAIL'
-    print(f'  [{status}] {name}')
-    if result.returncode != 0 and result.stderr:
-        print(f'         {result.stderr.strip()}')
-"
+backup = TARGET + ".bak-mcp-sync"
+shutil.copy2(TARGET, backup)
+
+data["mcpServers"] = new_mcp
+with open(TARGET, "w") as f:
+    json.dump(data, f, indent=2)
+
+for n in added:
+    print(f"  [add] {n}")
+for n in removed:
+    print(f"  [remove] {n}")
+for n in changed:
+    print(f"  [update] {n}")
+print(f"  backup: {backup}")
+PYEOF
 }
 
 # ─── Cursor ─────────────────────────────────────────────────────────────────
@@ -164,47 +207,112 @@ with open(target, 'w') as f:
 }
 
 # ─── Codex ──────────────────────────────────────────────────────────────────
+# Direct text patch on config/codex/config.toml (the real file — ~/.codex/config.toml
+# is a symlink to it). Touches ONLY [mcp_servers.<name>] tables whose name is in the
+# canonical set or was previously managed by this script; every other top-level table
+# (mcp_servers.node_repl + its env sub-table, notify, [plugins.*], [projects.*],
+# [marketplaces.*], [features], [desktop], ...) is reproduced byte-for-byte untouched,
+# in its original position.
 sync_codex() {
-  if ! command -v codex &>/dev/null; then
-    echo "  [skip] codex not installed"
+  if [ ! -f "$CODEX_CONFIG" ]; then
+    echo "  [skip] $CODEX_CONFIG not found"
     return
   fi
 
-  # Remove servers no longer in canonical config
-  for name in "${SERVERS_TO_REMOVE[@]+"${SERVERS_TO_REMOVE[@]}"}"; do
-    echo "  [remove] $name"
-    codex mcp remove "$name" 2>/dev/null || true
-  done
+  CODEX_CONFIG="$CODEX_CONFIG" SERVERS_JSON="$SERVERS_JSON" MCP_TO_REMOVE="$MCP_TO_REMOVE" \
+    python3 - <<'PYEOF'
+import json
+import os
+import re
+import sys
 
-  # Add/update each canonical server
-  python3 -c "
-import json, subprocess, sys
+CONFIG = os.environ["CODEX_CONFIG"]
+SERVERS_JSON = os.environ["SERVERS_JSON"]
+TO_REMOVE = [n for n in os.environ.get("MCP_TO_REMOVE", "").split() if n]
 
-with open('$SERVERS_JSON') as f:
-    servers = json.load(f)['servers']
+with open(SERVERS_JSON) as f:
+    servers = json.load(f)["servers"]
 
-for name, cfg in servers.items():
-    transport = cfg.get('transport', 'stdio')
+with open(CONFIG) as f:
+    text = f.read()
 
-    # Remove first to ensure clean state
-    subprocess.run(['codex', 'mcp', 'remove', name], capture_output=True)
+managed_names = set(servers.keys()) | set(TO_REMOVE)
 
-    cmd = ['codex', 'mcp', 'add', name]
+# Split into top-level blocks by exact "[table.name]" header lines.
+header_re = re.compile(r'^\[([A-Za-z0-9_.\"-]+)\]\s*$', re.MULTILINE)
+matches = list(header_re.finditer(text))
 
-    if transport == 'stdio':
-        cmd += ['--', cfg['command']] + cfg.get('args', [])
-    elif transport in ('http', 'sse'):
-        cmd += ['--url', cfg['url']]
-        auth = cfg.get('auth', {})
-        if auth.get('type') == 'bearer':
-            cmd += ['--bearer-token-env-var', auth['env_var']]
+preamble = text[: matches[0].start()] if matches else text
+blocks = []  # (header_name, full_block_text_including_header_line)
+for i, m in enumerate(matches):
+    start = m.start()
+    end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+    blocks.append((m.group(1), text[start:end]))
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    status = 'ok' if result.returncode == 0 else 'FAIL'
-    print(f'  [{status}] {name}')
-    if result.returncode != 0 and result.stderr:
-        print(f'         {result.stderr.strip()}')
-"
+
+def render_block(name, cfg):
+    transport = cfg.get("transport", "stdio")
+    lines = [f"[mcp_servers.{name}]"]
+    if transport == "stdio":
+        lines.append(f'command = {json.dumps(cfg["command"])}')
+        lines.append(f'args = {json.dumps(cfg.get("args", []))}')
+    else:
+        lines.append(f'url = {json.dumps(cfg["url"])}')
+        auth = cfg.get("auth", {})
+        if auth.get("type") == "bearer":
+            lines.append(f'bearer_token_env_var = {json.dumps(auth["env_var"])}')
+    return "\n".join(lines) + "\n"
+
+
+# Managed blocks: header is EXACTLY "mcp_servers.<name>" for a name we manage.
+# Never matches "mcp_servers.node_repl", "mcp_servers.node_repl.env", or [plugins.*].
+managed_indices = []
+for i, (name, _) in enumerate(blocks):
+    if name.startswith("mcp_servers."):
+        server_name = name[len("mcp_servers."):]
+        if server_name in managed_names and name == f"mcp_servers.{server_name}":
+            managed_indices.append(i)
+
+old_present = {
+    blocks[i][0][len("mcp_servers."):]: blocks[i][1] for i in managed_indices
+}
+
+insertion_index = min(managed_indices) if managed_indices else 0
+
+# Remove old managed blocks (highest index first to keep remaining indices valid)
+for i in sorted(managed_indices, reverse=True):
+    del blocks[i]
+
+# Fresh canonical blocks in servers.json order, blank-line separated, with a
+# trailing blank line so whatever follows (e.g. node_repl) keeps its separator.
+new_managed_text = "\n".join(render_block(n, c) for n, c in servers.items()) + "\n"
+blocks.insert(insertion_index, ("__MANAGED__", new_managed_text))
+
+new_text = preamble + "".join(body for _, body in blocks)
+
+added = sorted(set(servers) - set(old_present))
+removed = sorted(set(old_present) - set(servers))
+changed = sorted(
+    n for n in (set(servers) & set(old_present))
+    if old_present[n].strip() != render_block(n, servers[n]).strip()
+)
+
+if new_text == text:
+    print("  [ok] no changes (config.toml already in sync)")
+    sys.exit(0)
+
+with open(CONFIG, "w") as f:
+    f.write(new_text)
+
+for n in added:
+    print(f"  [add] {n}")
+for n in removed:
+    print(f"  [remove] {n}")
+for n in changed:
+    print(f"  [update] {n}")
+if not (added or removed or changed):
+    print("  [ok] formatting normalized (no server changes)")
+PYEOF
 }
 
 # ─── VS Code ───────────────────────────────────────────────────────────────
