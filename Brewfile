@@ -37,6 +37,7 @@ brew "yq"                  # jq for YAML/TOML (config-dense repo)
 brew "git-delta"           # rich git diff pager (configured in gitconfig_dotfiles)
 brew "zoxide"              # smarter cd (`z <dir>`; init in zshrc)
 brew "wget"                # the zshrc `wget -c` alias was dead without this
+brew "coreutils"           # GNU tools (gtimeout, gdate, …) — macOS ships no `timeout`; agents kept hand-rolling kill-loops (dead-ends 2026-07-07)
 
 # ── Cloud / IaC / DB ─────────────────────────────────────────────────────────
 brew "awscli"              # aws CLI; creds served from 1Password at runtime (see zshrc) — no plaintext ~/.aws/credentials
