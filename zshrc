@@ -162,12 +162,19 @@ function _agent_gh_pat() {
   OP_SERVICE_ACCOUNT_TOKEN="$(cat "$tok")" op read 'op://Agents/GitHub MCP PAT/credential' 2>/dev/null
 }
 
+# GBrain remote MCP (tailnet HTTP on the iMac) bearer token — same pattern.
+function _agent_gbrain_token() {
+  local tok="$HOME/.config/agents/op-token"
+  { [ -f "$tok" ] && command -v op >/dev/null; } || return 0
+  OP_SERVICE_ACCOUNT_TOKEN="$(cat "$tok")" op read 'op://Agents/GBrain MCP Token/credential' 2>/dev/null
+}
+
 function claude() {
-  GH_MCP_PAT="$(_agent_gh_pat)" command claude "$@"
+  GH_MCP_PAT="$(_agent_gh_pat)" GBRAIN_REMOTE_TOKEN="$(_agent_gbrain_token)" command claude "$@"
 }
 
 function codex() {
-  GH_MCP_PAT="$(_agent_gh_pat)" command codex "$@"
+  GH_MCP_PAT="$(_agent_gh_pat)" GBRAIN_REMOTE_TOKEN="$(_agent_gbrain_token)" command codex "$@"
 }
 
 # Initialize Starship prompt
