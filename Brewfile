@@ -43,6 +43,7 @@ brew "coreutils"           # GNU tools (gtimeout, gdate, …) — macOS ships no
 brew "awscli"              # aws CLI; creds served from 1Password at runtime (see zshrc) — no plaintext ~/.aws/credentials
 brew "postgresql@17"       # GBrain brain engine (localhost-only; service started on the iMac only — `brew services start postgresql@17`)
 brew "pgvector"            # pgvector extension for postgresql@17 — GBrain embeddings/hybrid search
+brew "gogcli"              # gog — Google Workspace CLI (Gmail/Drive/Docs/Calendar) for agents; email collector + Drive-link resolution (2026-07-07)
 # Install on demand — uncomment per machine when you actually need the GCP/IaC/DB work stack:
 #   brew "terraform"
 #   brew "opentofu"
