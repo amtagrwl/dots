@@ -153,13 +153,21 @@ if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
 
-# 1Password secrets for AI tool MCP servers
+# AI tool wrappers: resolve GH_MCP_PAT via the 1Password service account
+# (headless, never prompts Touch ID, never blocks startup). Token file is
+# machine-local; if it or op is missing, launch without the var.
+function _agent_gh_pat() {
+  local tok="$HOME/.config/agents/op-token"
+  { [ -f "$tok" ] && command -v op >/dev/null; } || return 0
+  OP_SERVICE_ACCOUNT_TOKEN="$(cat "$tok")" op read 'op://Agents/GitHub MCP PAT/credential' 2>/dev/null
+}
+
 function claude() {
-  GH_MCP_PAT="$(op read 'op://Personal/Claude Code Github MCP/credential')" command claude "$@"
+  GH_MCP_PAT="$(_agent_gh_pat)" command claude "$@"
 }
 
 function codex() {
-  GH_MCP_PAT="$(op read 'op://Personal/Claude Code Github MCP/credential')" command codex "$@"
+  GH_MCP_PAT="$(_agent_gh_pat)" command codex "$@"
 }
 
 # Initialize Starship prompt

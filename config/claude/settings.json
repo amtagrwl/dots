@@ -223,12 +223,14 @@
     }
   },
   "ultracode": true,
+  "advisorModel": "fable",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "editorMode": "normal",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "advisorModel": "fable",
-  "skipWorkflowUsageWarning": true,
-  "theme": "dark"
+  "remoteControlAtStartup": true
 }

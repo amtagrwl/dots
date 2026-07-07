@@ -78,10 +78,13 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
   (`personality`, `model`, `model_reasoning_effort`, network `[mcp_servers.*]`,
   `[plugins.*]`). Never `git add` the machine churn — restore with
   `git checkout HEAD -- config/codex/config.toml` and re-apply just the real change.
-- **Secrets never live in the repo.** They come from 1Password via `op read`
-  (see the `claude`/`codex` wrappers in `zshrc`). GitHub access is over **SSH via
-  the 1Password agent** — pushes fail until `scripts/ensure_1password_ssh.sh` has
-  run and the agent is enabled; clone over **HTTPS** on a fresh machine.
+- **Secrets never live in the repo.** 1Password is the vault of record. Anything
+  agents need headless comes from the `Agents` vault via the **WorkspaceAgents
+  service account** (`~/.config/agents/op-token`, machine-local) — the
+  `claude`/`codex` wrappers resolve `GH_MCP_PAT` this way: no Touch ID, no
+  startup blocking, graceful no-var fallback. Human SSH flows may still use the
+  1Password SSH agent (`scripts/ensure_1password_ssh.sh`); unattended git
+  automation prefers HTTPS + `gh auth setup-git`.
 - `mas` lines need the **App Store app signed in** *and* the apps already owned on
   the Apple ID — otherwise `mas install` fails with a misleading `sudo: a terminal
   is required` error; the App Store GUI is the reliable fallback. `vscode` lines

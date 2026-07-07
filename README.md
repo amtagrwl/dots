@@ -25,17 +25,19 @@ The bootstrap pauses for the steps that can't be scripted:
 - **App Store** — sign in, then install **Amphetamine** and **Bear** from the App Store GUI
   (most reliable). The `mas` lines only succeed if you're signed in *and* already own the apps —
   otherwise `mas install` fails with a misleading `sudo: a terminal is required`.
-- **1Password** — sign in, then Settings → Developer → enable **Use the SSH agent**
-  and **Integrate with 1Password CLI**. This is what makes `git push` over SSH work
-  (keys live in 1Password) and what lets the `claude`/`codex` shell wrappers read
-  `op://Personal/Claude Code Github MCP/credential`.
-- **gh / gcloud** — `gh auth login`, `gcloud auth login`, `gcloud auth application-default login`.
+- **1Password** — sign in; optionally enable Settings → Developer → **Use the SSH
+  agent** + **Integrate with 1Password CLI** for human key flows. Agent tooling
+  does NOT depend on either: install the **WorkspaceAgents service-account token**
+  at `~/.config/agents/op-token` (chmod 600; from the 1Password item
+  "Service Account Auth Token: WorkspaceAgents") — the `claude`/`codex` wrappers
+  and all unattended agents read the `Agents` vault through it, headless.
+- **gh / gcloud** — `gh auth login`, `gh auth setup-git`, `gcloud auth login`, `gcloud auth application-default login`.
 
-After 1Password's SSH agent is on, switch this repo to SSH:
+Keep this repo on HTTPS so unattended agent automation never blocks on key
+approval (`gh auth setup-git` handles credentials):
 
 ```bash
-git remote set-url origin git@github.com:amtagrwl/dots.git
-ssh -T git@github.com   # should greet you by username
+git remote set-url origin https://github.com/amtagrwl/dots.git
 ```
 
 > openclaw / hermes / local-LLM tooling are intentionally **not** in this repo —
