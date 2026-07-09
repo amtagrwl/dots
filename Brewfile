@@ -133,3 +133,5 @@ vscode "tamasfe.even-better-toml"
 vscode "tomoki1207.pdf"
 vscode "vscodevim.vim"
 brew "libomp"  # lightgbm runtime (FC value model SHAP)
+brew "golang-migrate"           # Business Spine CH migrations (MIT; Atlas CH driver is Pro-gated)
+# atlas: brew tap gone — install via: curl -sL -o ~/.local/bin/atlas https://release.ariga.io/atlas/atlas-community-darwin-arm64-latest && chmod +x ~/.local/bin/atlas
