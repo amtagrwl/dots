@@ -36,6 +36,14 @@
       create: true
       force: true
 
+    # gbrain MCP stdio shim — mints its own bearer token (op service account)
+    # so agent sessions launched WITHOUT the zshrc claude()/codex() wrappers
+    # still reach the brain. Referenced by config/codex/config.toml.
+    ~/.local/bin/gbrain-mcp-proxy:
+      path: bin/gbrain-mcp-proxy
+      create: true
+      force: true
+
     # Public key selector for the iMac SSH host block managed by
     # scripts/ensure_1password_ssh.sh. Public key only; private key remains in 1Password.
     ~/.ssh/1password-imac-ssh.pub:

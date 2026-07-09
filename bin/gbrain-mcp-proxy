@@ -1,0 +1,26 @@
+#!/bin/bash
+# gbrain-mcp-proxy — stdio MCP shim for the GBrain tailnet server.
+#
+# Why: Codex/Claude configs point MCP at https://imac.tailcad683.ts.net/mcp,
+# which needs a bearer token. The zshrc claude()/codex() wrappers inject
+# GBRAIN_REMOTE_TOKEN, but sessions launched any other way (IDE plugins,
+# `command codex`, launchd, ChatGPT.app spawning codex) get no env and the
+# gbrain MCP namespace silently vanishes. This shim mints the token itself,
+# so the config works in EVERY launch context on both Macs.
+#
+# Wired via ~/.codex/config.toml [mcp_servers.gbrain] command = this script.
+# Deployed at ~/.local/bin/gbrain-mcp-proxy (dotbot link, see install.conf.yaml).
+set -u
+TOK="${GBRAIN_REMOTE_TOKEN:-}"
+if [ -z "$TOK" ] && [ -r "$HOME/.config/agents/op-token" ] && command -v op >/dev/null 2>&1; then
+  TOK="$(OP_SERVICE_ACCOUNT_TOKEN="$(cat "$HOME/.config/agents/op-token")" \
+        op read 'op://Agents/GBrain MCP Token/credential' 2>/dev/null)"
+fi
+if [ -z "$TOK" ]; then
+  echo "gbrain-mcp-proxy: no GBRAIN_REMOTE_TOKEN and could not mint one via op" >&2
+  exit 1
+fi
+# bunx caches mcp-remote after first run; pin major to avoid surprise breaks.
+exec /opt/homebrew/bin/bunx -y mcp-remote@0 https://imac.tailcad683.ts.net/mcp \
+  --transport http-first \
+  --header "Authorization: Bearer ${TOK}"
