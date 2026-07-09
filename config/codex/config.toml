@@ -50,8 +50,11 @@ CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 # stdio shim (dots/bin) mints the bearer token itself — works in every launch
 # context, not just zshrc-wrapper shells that inject GBRAIN_REMOTE_TOKEN.
+# Timeouts: bunx/mcp-remote bridge adds cold-start + per-call latency.
 [mcp_servers.gbrain]
 command = "/Users/amtagrwl/.local/bin/gbrain-mcp-proxy"
+startup_timeout_sec = 60
+tool_timeout_sec = 120
 
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
