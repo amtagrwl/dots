@@ -11,7 +11,6 @@ set -eu
 ssh_dir="$HOME/.ssh"
 ssh_config="$ssh_dir/config"
 agent_sock="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-imac_pubkey="$ssh_dir/1password-imac-ssh.pub"
 
 mkdir -p "$ssh_dir"
 chmod 700 "$ssh_dir"
@@ -63,6 +62,41 @@ EOF
   echo "✔ Added iMac SSH block."
 fi
 [ -f "$HOME/.ssh/agents_ed25519" ] || echo "⚠  ~/.ssh/agents_ed25519 missing — generate it and authorize on the iMac (see comment above)."
+
+# AI CRM data-platform SSH (managed by dotfiles) — bastion + Postgres bronze_db on the
+# internal 172.20.x network (IndiaMART VPN required to reach the bastion). Pinned to the
+# machine-local crm_agent key with IdentitiesOnly so the 1Password agent does NOT spray
+# keys at the bastion (which returns "Too many authentication failures"). SSH user
+# amit_121480 (verified 2026-07-08 — same as the AWS IAM user, not the VPN name).
+# ClickHouse 172.20.50.33 was unreachable on every port — confirm the real host with
+# Shriya, then add a crm-clickhouse block mirroring crm-pg. Topology:
+# ~/Workspace/Projects/AI CRM/ACCESS.md.
+crm_marker="# AI CRM data-platform SSH (managed by dotfiles"
+if grep -qF "$crm_marker" "$ssh_config" 2>/dev/null; then
+  echo "✔ ~/.ssh/config already has the managed AI CRM SSH block."
+else
+  echo "🔧 Adding AI CRM data-platform SSH block to ~/.ssh/config..."
+  cat >> "$ssh_config" <<EOF
+
+$crm_marker; crm_agent key, VPN required)
+Host crm-bastion
+  HostName 65.0.24.32
+  User amit_121480
+  IdentityAgent none
+  IdentityFile ~/.ssh/crm_agent
+  IdentitiesOnly yes
+
+Host crm-pg
+  HostName 172.20.50.113
+  User amit_121480
+  IdentityAgent none
+  IdentityFile ~/.ssh/crm_agent
+  IdentitiesOnly yes
+  ProxyJump crm-bastion
+EOF
+  echo "✔ Added AI CRM SSH block."
+fi
+[ -f "$HOME/.ssh/crm_agent" ] || echo "⚠  ~/.ssh/crm_agent missing — machine-local key (MacBook); copy/regenerate+re-authorize to use crm-* aliases."
 
 if [ -S "$agent_sock" ]; then
   echo "✔ 1Password SSH agent socket is live."
