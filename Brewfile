@@ -72,6 +72,7 @@ cask "airbuddy"
 cask "qlmarkdown"
 
 # ── AI / dev tools ───────────────────────────────────────────────────────────
+cask "clickhouse"          # ClickHouse CLI (native protocol client for AI CRM / CH Cloud). Unsigned binary — after install: xattr -d com.apple.quarantine $(readlink -f /opt/homebrew/bin/clickhouse)
 cask "cursor"
 cask "claude"              # Claude desktop (pairs with Claude Code + Bear MCP)
 cask "codex"               # Codex CLI
@@ -131,3 +132,4 @@ vscode "stkb.rewrap"
 vscode "tamasfe.even-better-toml"
 vscode "tomoki1207.pdf"
 vscode "vscodevim.vim"
+brew "libomp"  # lightgbm runtime (FC value model SHAP)
