@@ -44,6 +44,15 @@
       create: true
       force: true
 
+    # git credential helper — GitHub PAT via the 1Password SERVICE ACCOUNT,
+    # the headless fallback after `gh auth git-credential` (which needs the
+    # unlocked login keychain). Wire-up is a one-time --global git config add
+    # per machine (see the script header). HTTPS remotes only.
+    ~/.local/bin/git-credential-op:
+      path: bin/git-credential-op
+      create: true
+      force: true
+
     # Public key selector for the iMac SSH host block managed by
     # scripts/ensure_1password_ssh.sh. Public key only; private key remains in 1Password.
     ~/.ssh/1password-imac-ssh.pub:
