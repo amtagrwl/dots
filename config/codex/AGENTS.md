@@ -7,13 +7,16 @@
 
 Primary agent workspace: `/Users/amtagrwl/Workspace`.
 Shared project files: `/Users/amtagrwl/Workspace/Projects`.
-Shared artifacts/outputs: `/Users/amtagrwl/Workspace/Artifacts`.
+New deliverables/outputs: the owning project's declared output directory,
+normally `/Users/amtagrwl/Workspace/Projects/<project>/artifacts/`.
 Local scheduled-task state: `/Users/amtagrwl/Workspace/Scheduled`.
-Cross-agent handoffs: `/Users/amtagrwl/Workspace/Handoffs`.
+New session handoffs: `/Users/amtagrwl/Workspace/Memory/inbox/YYYY-MM-DD/`.
+Top-level `Workspace/Artifacts` and `Workspace/Handoffs` are frozen/read-only;
+follow the live root `Workspace/AGENTS.md` contract.
 
 Do not live-sync raw agent session stores (`~/.claude`, `~/.codex`,
-`~/.hermes`, or `~/Library/Application Support/Claude`). Use Bear and handoff
-notes for cross-machine continuity.
+`~/.hermes`, or `~/Library/Application Support/Claude`). Use Bear and
+`Memory/inbox/` notes for cross-machine continuity.
 
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
