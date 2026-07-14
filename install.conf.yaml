@@ -44,6 +44,13 @@
       create: true
       force: true
 
+    # Decision Desk MCP shim — local stdio on the iMac, tailnet Streamable HTTP
+    # from other Macs. No Decision Desk service secret leaves the iMac.
+    ~/.local/bin/decision-desk-mcp-proxy:
+      path: bin/decision-desk-mcp-proxy
+      create: true
+      force: true
+
     # git credential helper — GitHub PAT via the 1Password SERVICE ACCOUNT,
     # the headless fallback after `gh auth git-credential` (which needs the
     # unlocked login keychain). Wire-up is a one-time --global git config add

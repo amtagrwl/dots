@@ -28,6 +28,11 @@
       "transport": "stdio",
       "command": "/Applications/Bear.app/Contents/MacOS/bearcli",
       "args": ["mcp-server"]
+    },
+    "decision-desk": {
+      "transport": "stdio",
+      "command": "/Users/amtagrwl/.local/bin/decision-desk-mcp-proxy",
+      "args": []
     }
   }
 }

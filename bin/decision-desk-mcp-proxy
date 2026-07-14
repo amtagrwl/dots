@@ -1,0 +1,22 @@
+#!/bin/bash
+# decision-desk-mcp-proxy — machine-portable stdio entrypoint.
+# iMac: use the local stdio server and keep the service key on the machine.
+# Other tailnet Macs: bridge stdio to the authenticated Tailscale Serve endpoint.
+set -euo pipefail
+
+LOCAL_RUNNER="$HOME/git/decision-desk/ops/run-mcp.sh"
+LOCAL_ENV="$HOME/Library/Application Support/Decision Desk/service.env"
+REMOTE_URL="https://imac.tailcad683.ts.net:8443/mcp"
+
+if [ -x "$LOCAL_RUNNER" ] && [ -r "$LOCAL_ENV" ]; then
+  exec "$LOCAL_RUNNER"
+fi
+
+if [ ! -x /opt/homebrew/bin/bunx ]; then
+  echo "decision-desk-mcp-proxy: /opt/homebrew/bin/bunx is required for remote MCP" >&2
+  exit 1
+fi
+
+# The endpoint is private to Amit's tailnet. Tailscale Serve injects the verified
+# user identity; no Decision Desk service key is copied to clients.
+exec /opt/homebrew/bin/bunx -y mcp-remote@0 "$REMOTE_URL" --transport http-first
