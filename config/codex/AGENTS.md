@@ -18,6 +18,13 @@ Do not live-sync raw agent session stores (`~/.claude`, `~/.codex`,
 `~/.hermes`, or `~/Library/Application Support/Claude`). Use Bear and
 `Memory/inbox/` notes for cross-machine continuity.
 
+## Python Runtime
+
+- ALWAYS use `uv run python` for general Python commands and scripts.
+- NEVER invoke macOS Apple `/usr/bin/python3` directly.
+- Use a project-specific virtual environment (including Hermes' venv) only
+  when the command requires dependencies installed specifically in that environment.
+
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
 Context: I am ADHD, thrive under pressure, love deadlines, and hate working ahead
