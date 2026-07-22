@@ -3,6 +3,7 @@ model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
 
 notify = ["/Users/amtagrwl/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+mcp_oauth_credentials_store = "keyring"
 
 [mcp_servers.playwright]
 command = "bunx"

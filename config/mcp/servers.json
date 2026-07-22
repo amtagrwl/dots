@@ -33,6 +33,10 @@
       "transport": "stdio",
       "command": "/Users/amtagrwl/.local/bin/decision-desk-mcp-proxy",
       "args": []
+    },
+    "openrouter": {
+      "transport": "http",
+      "url": "https://mcp.openrouter.ai/mcp"
     }
   }
 }
