@@ -1,9 +1,30 @@
 personality = "pragmatic"
-model = "gpt-5.5"
-model_reasoning_effort = "xhigh"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
 
 notify = ["/Users/amtagrwl/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 mcp_oauth_credentials_store = "keyring"
+approval_policy = "on-request"
+approvals_reviewer = "guardian_subagent"
+sandbox_mode = "workspace-write"
+
+# Deliberately NOT danger-full-access. `workspace-write` plus an explicit
+# writable root is the "ask me when it matters" posture, not blanket authority:
+# Codex may write source repos and reach the network, and approval_policy
+# "on-request" still gates anything outside that.
+#
+# Why this exists (27-Jul): every delegated implementation job failed with
+# "readable but not writable" and DNS to scm.intermesh.net was unavailable.
+# Cause was structural, not a bug — repos live in ~/git per the workspace
+# contract, which is OUTSIDE the session cwd, and workspace-write blocks
+# network by default. Diagnosis got done and no fix could ever be pushed.
+[sandbox_workspace_write]
+# ~/git only. The synced Workspace tree is intentionally absent: source never
+# lives there, and a stray write inside it propagates to the other Mac.
+writable_roots = ["/Users/amtagrwl/git"]
+# Needed for git fetch/push and glab. Without it a job can diagnose but never
+# publish, which is the exact failure this replaces.
+network_access = true
 
 [mcp_servers.playwright]
 command = "bunx"
@@ -11,6 +32,9 @@ args = ["@playwright/mcp@0.0.68"]
 
 [mcp_servers.deepwiki]
 url = "https://mcp.deepwiki.com/mcp"
+
+[mcp_servers.openrouter]
+url = "https://mcp.openrouter.ai/mcp"
 
 [mcp_servers.github]
 url = "https://api.githubcopilot.com/mcp/"
@@ -28,6 +52,10 @@ args = ["@google-cloud/gcloud-mcp@0.5.3"]
 command = "/Applications/Bear.app/Contents/MacOS/bearcli"
 args = ["mcp-server"]
 
+[mcp_servers.decision-desk]
+command = "/Users/amtagrwl/.local/bin/decision-desk-mcp-proxy"
+args = []
+
 [mcp_servers.node_repl]
 args = []
 command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
@@ -39,14 +67,14 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_n
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/amtagrwl/.codex"
 CODEX_HOME = "/Users/amtagrwl/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,9f3594de71104f9f06015712cef546902a47ab57709ebf93db6e6081d8e92364"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,e13fd947e846d3d306e9249dd3c73d14931b6494803dbafb16cef85e6add9506"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.707.31123"
-SKY_CUA_SERVICE_PATH = "/Users/amtagrwl/.codex/plugins/cache/openai-bundled/computer-use/1.0.1000366/Codex Computer Use.app"
+BROWSER_USE_CODEX_APP_VERSION = "26.721.41059"
+SKY_CUA_SERVICE_PATH = "/Users/amtagrwl/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 # stdio shim (dots/bin) mints the bearer token itself — works in every launch
@@ -81,30 +109,78 @@ enabled = true
 [plugins."presentations@openai-primary-runtime"]
 enabled = true
 
-[plugins."browser@openai-bundled"]
-enabled = true
-
 [plugins."pdf@openai-primary-runtime"]
 enabled = true
 
 [plugins."template-creator@openai-primary-runtime"]
 enabled = true
 
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
 [projects."/Users/amtagrwl"]
 trust_level = "trusted"
 
+[projects."/Users/amtagrwl/Workspace"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/Documents/Codex/2026-07-17/https-docs-google-com-spreadsheets-d"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/Documents/Codex/2026-07-18/can"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/Documents/Codex/2026-07-18/tur"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/git/ai-aggregator-platform"]
+trust_level = "trusted"
+
+[projects."/private/tmp"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/git"]
+trust_level = "trusted"
+
+[projects."/Users/amtagrwl/Documents/Codex/2026-07-24/realtime-voice-chat"]
+trust_level = "trusted"
+
 [marketplaces.openai-bundled]
-last_updated = "2026-06-27T22:31:32Z"
+last_updated = "2026-07-27T06:35:30Z"
 source_type = "local"
 source = "/Users/amtagrwl/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-07-01T10:04:58Z"
+last_updated = "2026-07-24T08:37:12Z"
 source_type = "local"
 source = "/Users/amtagrwl/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [features]
+hooks = true
 js_repl = false
+memories = true
 
 [desktop]
-followUpQueueMode = "queue"
+followUpQueueMode = "steer"
+dock-icon-preference = "codex-system"
+conversationDetailMode = "STEPS_COMMANDS"
+realtimeVoiceScreenContextEnabled = true
+keepRemoteControlAwakeWhilePluggedIn = true
+
+[shell_environment_policy.set]
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,e13fd947e846d3d306e9249dd3c73d14931b6494803dbafb16cef85e6add9506"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/amtagrwl/.codex"
+
+[memories]
+generate_memories = true
+use_memories = true
