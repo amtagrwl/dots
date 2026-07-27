@@ -5,7 +5,13 @@ model_reasoning_effort = "high"
 notify = ["/Users/amtagrwl/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 mcp_oauth_credentials_store = "keyring"
 approval_policy = "on-request"
-approvals_reviewer = "guardian_subagent"
+# auto_review, not guardian_subagent. Same sandbox boundary as before — the
+# writable roots below are unchanged and still bound what a job can touch. What
+# changes is who answers an eligible approval request: it is reviewed
+# automatically instead of parking until Amit happens to look. Delegated jobs
+# stalled for most of 27-Jul waiting on approvals nobody was watching.
+# Ref: learn.chatgpt.com/docs/agent-approvals-security#common-sandbox-and-approval-combinations
+approvals_reviewer = "auto_review"
 sandbox_mode = "workspace-write"
 
 # Deliberately NOT danger-full-access. `workspace-write` plus an explicit
