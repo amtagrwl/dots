@@ -31,6 +31,10 @@ The bootstrap pauses for the steps that can't be scripted:
   at `~/.config/agents/op-token` (chmod 600; from the 1Password item
   "Service Account Auth Token: WorkspaceAgents") — the `claude`/`codex` wrappers
   and all unattended agents read the `Agents` vault through it, headless.
+- **Contexts** — after 1Password CLI sign-in, bootstrap retrieves the signed
+  `Contexts License` document from the `Agents` vault and imports it. The
+  license never lives in this repository. Re-run manually with
+  `./scripts/ensure_contexts_license.sh`.
 - **gh / gcloud** — `gh auth login`, `gh auth setup-git`, `gcloud auth login`, `gcloud auth application-default login`.
 
 Keep this repo on HTTPS so unattended agent automation never blocks on key
@@ -47,6 +51,10 @@ git remote set-url origin https://github.com/amtagrwl/dots.git
 
 1. Clone the repository.
 2. Run the install script: `./install` (This will link configs and install Brew packages from `Brewfile`)
+
+The install also makes the standard macOS screenshot shortcuts copy images to
+the clipboard instead of writing files to the Desktop. The setting is managed
+by `scripts/macos_screenshot_settings.sh`.
 
 ## Remote iMac Hermes session: Tailscale + mosh + tmux
 

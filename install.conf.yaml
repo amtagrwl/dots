@@ -164,6 +164,10 @@
       description: Make 1Password SSH script executable
       quiet: true
 
+    - command: chmod +x scripts/ensure_contexts_license.sh
+      description: Make Contexts license helper executable
+      quiet: true
+
     - command: |
         if [ "$(uname)" = "Darwin" ]; then
           ./scripts/ensure_1password_ssh.sh
@@ -185,6 +189,20 @@
           echo "Skipping macOS Finder configuration as not on macOS."
         fi
       description: Configure macOS Finder settings
+      stdout: true
+      stderr: true
+
+    - command: chmod +x scripts/macos_screenshot_settings.sh
+      description: Make macOS screenshot settings script executable
+      quiet: true
+
+    - command: |
+        if [ "$(uname)" = "Darwin" ]; then
+          ./scripts/macos_screenshot_settings.sh
+        else
+          echo "Skipping macOS screenshot configuration as not on macOS."
+        fi
+      description: Copy macOS screenshots to the clipboard by default
       stdout: true
       stderr: true
 

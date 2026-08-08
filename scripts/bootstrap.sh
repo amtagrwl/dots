@@ -103,6 +103,9 @@ pause "Open 1Password, sign in, then Settings → Developer → enable 'Use the 
 if command -v op >/dev/null 2>&1; then
   if op account list >/dev/null 2>&1; then
     ok "op CLI signed in"
+    if ! "$REPO_DIR/scripts/ensure_contexts_license.sh"; then
+      warn "Contexts licensing is incomplete — rerun: $REPO_DIR/scripts/ensure_contexts_license.sh"
+    fi
   else
     warn "Run: op signin   (then verify: op read 'op://Personal/Claude Code Github MCP/credential')"
   fi
