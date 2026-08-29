@@ -83,8 +83,8 @@ BROWSER_USE_CODEX_APP_VERSION = "26.721.41059"
 SKY_CUA_SERVICE_PATH = "/Users/amtagrwl/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
-# stdio shim (dots/bin) mints the bearer token itself — works in every launch
-# context, not just zshrc-wrapper shells that inject GBRAIN_REMOTE_TOKEN.
+# The stdio shim uses an already-exported bearer token and exits immediately
+# when absent; it never performs live secret resolution during MCP startup.
 # Timeouts: bunx/mcp-remote bridge adds cold-start + per-call latency.
 [mcp_servers.gbrain]
 command = "/Users/amtagrwl/.local/bin/gbrain-mcp-proxy"

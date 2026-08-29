@@ -79,11 +79,13 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
   `[plugins.*]`). Never `git add` the machine churn — restore with
   `git checkout HEAD -- config/codex/config.toml` and re-apply just the real change.
 - **Secrets never live in the repo.** 1Password is the vault of record. Anything
-  agents need headless is provisioned from the `Agents` vault via the
-  **WorkspaceAgents service account** (`~/.config/agents/op-token`, machine-local).
-  The `claude`/`codex` wrappers never call `op` synchronously; they inherit
-  pre-rendered machine-local credentials, so missing optional MCP credentials do
-  not block startup. Human SSH flows may still use the 1Password SSH agent
+  agents need headless comes from the `Agents` vault via the **WorkspaceAgents
+  service account** (`~/.config/agents/op-token`, machine-local). Non-interactive
+  shells load that local token file so explicit unattended `op` commands work;
+  that export does not invoke the 1Password CLI or network. The `claude`/`codex`
+  wrappers and GBrain proxy inherit only already-exported final credentials and
+  never query 1Password at CLI/MCP startup, so missing optional MCP credentials
+  do not block startup. Human SSH flows may still use the 1Password SSH agent
   (`scripts/ensure_1password_ssh.sh`); unattended git automation prefers HTTPS +
   `gh auth setup-git`.
 - `mas` lines need the **App Store app signed in** *and* the apps already owned on
