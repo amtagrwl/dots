@@ -36,9 +36,9 @@
       create: true
       force: true
 
-    # gbrain MCP stdio shim — mints its own bearer token (op service account)
-    # so agent sessions launched WITHOUT the zshrc claude()/codex() wrappers
-    # still reach the brain. Referenced by config/codex/config.toml.
+    # GBrain MCP stdio shim — uses an already-exported GBRAIN_REMOTE_TOKEN and
+    # exits immediately as unavailable when it is absent, with no startup secret
+    # lookup. Referenced by config/codex/config.toml.
     ~/.local/bin/gbrain-mcp-proxy:
       path: bin/gbrain-mcp-proxy
       create: true
