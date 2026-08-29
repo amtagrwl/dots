@@ -29,8 +29,10 @@ The bootstrap pauses for the steps that can't be scripted:
   agent** + **Integrate with 1Password CLI** for human key flows. Agent tooling
   does NOT depend on either: install the **WorkspaceAgents service-account token**
   at `~/.config/agents/op-token` (chmod 600; from the 1Password item
-  "Service Account Auth Token: WorkspaceAgents") — the `claude`/`codex` wrappers
-  and all unattended agents read the `Agents` vault through it, headless.
+  "Service Account Auth Token: WorkspaceAgents") for explicit unattended secret
+  provisioning. The `claude`/`codex` wrappers inherit pre-rendered credentials;
+  they never query 1Password at startup, so missing optional MCP credentials do
+  not block the coding CLI.
 - **Contexts** — after 1Password CLI sign-in, bootstrap retrieves the signed
   `Contexts License` document from the `Agents` vault and imports it. The
   license never lives in this repository. Re-run manually with

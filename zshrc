@@ -153,28 +153,15 @@ if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
 
-# AI tool wrappers: resolve GH_MCP_PAT via the 1Password service account
-# (headless, never prompts Touch ID, never blocks startup). Token file is
-# machine-local; if it or op is missing, launch without the var.
-function _agent_gh_pat() {
-  local tok="$HOME/.config/agents/op-token"
-  { [ -f "$tok" ] && command -v op >/dev/null; } || return 0
-  OP_SERVICE_ACCOUNT_TOKEN="$(cat "$tok")" op read 'op://Agents/GitHub MCP PAT/credential' 2>/dev/null
-}
-
-# GBrain remote MCP (tailnet HTTP on the iMac) bearer token — same pattern.
-function _agent_gbrain_token() {
-  local tok="$HOME/.config/agents/op-token"
-  { [ -f "$tok" ] && command -v op >/dev/null; } || return 0
-  OP_SERVICE_ACCOUNT_TOKEN="$(cat "$tok")" op read 'op://Agents/GBrain MCP Token/credential' 2>/dev/null
-}
-
+# AI tool wrappers must never perform live secret resolution. They inherit any
+# already-rendered machine-local environment; missing optional MCP credentials
+# degrade those MCPs rather than blocking Claude/Codex startup.
 function claude() {
-  GH_MCP_PAT="$(_agent_gh_pat)" GBRAIN_REMOTE_TOKEN="$(_agent_gbrain_token)" command claude "$@"
+  command claude "$@"
 }
 
 function codex() {
-  GH_MCP_PAT="$(_agent_gh_pat)" GBRAIN_REMOTE_TOKEN="$(_agent_gbrain_token)" command codex "$@"
+  command codex "$@"
 }
 
 # Initialize Starship prompt

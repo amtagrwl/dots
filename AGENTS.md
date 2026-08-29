@@ -21,7 +21,7 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
 |---|---|
 | `install.conf.yaml` | dotbot manifest — the source of truth for links + setup steps |
 | `Brewfile` | Homebrew formulae / casks / `mas` apps / Cursor extensions |
-| `zshrc` | shell config (PATH, aliases, fzf/zoxide/starship init, `op`-backed `claude`/`codex` wrappers) |
+| `zshrc` | shell config (PATH, aliases, fzf/zoxide/starship init, non-blocking `claude`/`codex` wrappers) |
 | `gitconfig_dotfiles` | non-secret git config (aliases, delta pager); included into `~/.gitconfig` |
 | `config/claude/` | Claude Code global config (`CLAUDE.md`, `settings.json`, statusline) |
 | `config/codex/` | Codex global config (`config.toml`, `AGENTS.md`) |
@@ -79,12 +79,13 @@ setup scripts (`scripts/`). Idempotent — safe to re-run after any change.
   `[plugins.*]`). Never `git add` the machine churn — restore with
   `git checkout HEAD -- config/codex/config.toml` and re-apply just the real change.
 - **Secrets never live in the repo.** 1Password is the vault of record. Anything
-  agents need headless comes from the `Agents` vault via the **WorkspaceAgents
-  service account** (`~/.config/agents/op-token`, machine-local) — the
-  `claude`/`codex` wrappers resolve `GH_MCP_PAT` this way: no Touch ID, no
-  startup blocking, graceful no-var fallback. Human SSH flows may still use the
-  1Password SSH agent (`scripts/ensure_1password_ssh.sh`); unattended git
-  automation prefers HTTPS + `gh auth setup-git`.
+  agents need headless is provisioned from the `Agents` vault via the
+  **WorkspaceAgents service account** (`~/.config/agents/op-token`, machine-local).
+  The `claude`/`codex` wrappers never call `op` synchronously; they inherit
+  pre-rendered machine-local credentials, so missing optional MCP credentials do
+  not block startup. Human SSH flows may still use the 1Password SSH agent
+  (`scripts/ensure_1password_ssh.sh`); unattended git automation prefers HTTPS +
+  `gh auth setup-git`.
 - `mas` lines need the **App Store app signed in** *and* the apps already owned on
   the Apple ID — otherwise `mas install` fails with a misleading `sudo: a terminal
   is required` error; the App Store GUI is the reliable fallback. `vscode` lines
