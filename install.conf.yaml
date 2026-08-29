@@ -192,6 +192,20 @@
       stdout: true
       stderr: true
 
+    - command: chmod +x scripts/macos_mission_control_settings.sh
+      description: Make macOS Mission Control settings script executable
+      quiet: true
+
+    - command: |
+        if [ "$(uname)" = "Darwin" ]; then
+          ./scripts/macos_mission_control_settings.sh
+        else
+          echo "Skipping macOS Mission Control configuration as not on macOS."
+        fi
+      description: Keep Mission Control Spaces in a fixed order
+      stdout: true
+      stderr: true
+
     - command: chmod +x scripts/macos_screenshot_settings.sh
       description: Make macOS screenshot settings script executable
       quiet: true
