@@ -21,3 +21,13 @@ fi
 if [[ ! -o interactive && -z "${OP_SERVICE_ACCOUNT_TOKEN:-}" && -r "$HOME/.config/agents/op-token" ]]; then
   export OP_SERVICE_ACCOUNT_TOKEN="$(< "$HOME/.config/agents/op-token")"
 fi
+
+# Prefer the iMac's external SSD for disposable agent/package-manager data.
+# The directory guard keeps this portable dotfile safe on the MacBook and when
+# the volume is temporarily unavailable; tools then fall back to defaults.
+if [[ -d /Volumes/Shared/scratch/claude/tmp ]]; then
+  export CLAUDE_CODE_TMPDIR="/Volumes/Shared/scratch/claude/tmp"
+fi
+if [[ -d /Volumes/Shared/cache/bun ]]; then
+  export BUN_INSTALL_CACHE_DIR="/Volumes/Shared/cache/bun"
+fi
