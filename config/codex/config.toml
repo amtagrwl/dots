@@ -121,6 +121,12 @@ enabled = true
 [plugins."template-creator@openai-primary-runtime"]
 enabled = true
 
+[plugins."codex@openai-codex"]
+enabled = true
+
+[plugins."anthropic-skills@claude-cowork"]
+enabled = true
+
 [plugins."sites@openai-bundled"]
 enabled = true
 
