@@ -25,6 +25,41 @@ Do not live-sync raw agent session stores (`~/.claude`, `~/.codex`,
 - Use a project-specific virtual environment (including Hermes' venv) only
   when the command requires dependencies installed specifically in that environment.
 
+## Google Workspace and email routing
+
+- **IndiaMART `aa@indiamart.com`: use `gog` or an approved `gog` wrapper only.**
+  Never fall back to Himalaya, a generic Gmail/Google Workspace connector,
+  `gws`, or `google_api`. If a required capability is absent, name the missing
+  grant instead of switching transports.
+- **Personal `amtagrwl@gmail.com`: use Himalaya only.**
+- Load `/Users/amtagrwl/Workspace/Tools/skills/gog-use/SKILL.md` for the current
+  capability inventory and workflow. `gog auth list --json` is the live grant
+  authority; a CLI command existing is not proof that its OAuth scope exists.
+
+## Cross-agent deployment closure
+
+Changes to shared operating instructions, skills, routing, tools, or automation
+remain open until the canonical source, dots/config, machine-local wiring, and a
+real consumer readback are verified on every intended agent/runtime and both
+Macs. An edited file or commit is preparation, not deployment. Existing sessions
+may require restart/reload; if the MacBook is unreachable, leave one exact local
+verification command and keep its deployment row pending until proof returns.
+
+## Friction and Compounding Learning
+
+- When meaningful operational friction occurs — a direct correction,
+  stale/contradictory instruction, repeated search pivot, recurring failure,
+  or manual workaround — write one compact, privacy-safe event following
+  `/Users/amtagrwl/Workspace/Memory/friction/README.md`, then immediately return
+  to the user's active task.
+- Logging friction is capture-only. It does not authorize or require diagnosis,
+  repair, instruction edits, tool/skill creation, or verification in that session.
+- The weekly compiler owns deduplication and promotion. At recurrence, route the
+  repair to the narrowest durable layer: preference → global instruction/memory;
+  routing → AGENTS/README/structure; procedure → skill; deterministic repetition
+  → tested script/tool; repeated API need → Printing Press; Hermes defect →
+  issue/PR. Close only after replay or mechanical verification.
+
 ## Ship-First Bias (Anti-Planning-Loop Rules)
 
 Context: I am ADHD, thrive under pressure, love deadlines, and hate working ahead
