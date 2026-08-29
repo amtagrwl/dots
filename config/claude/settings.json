@@ -232,5 +232,6 @@
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "model": "fable"
 }
