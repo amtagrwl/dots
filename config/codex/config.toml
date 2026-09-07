@@ -25,9 +25,9 @@ sandbox_mode = "workspace-write"
 # contract, which is OUTSIDE the session cwd, and workspace-write blocks
 # network by default. Diagnosis got done and no fix could ever be pushed.
 [sandbox_workspace_write]
-# ~/git only. The synced Workspace tree is intentionally absent: source never
-# lives there, and a stray write inside it propagates to the other Mac.
-writable_roots = ["/Users/amtagrwl/git"]
+# Source repos and external SSD scratch space. The synced Workspace tree
+# is intentionally absent from these additional writable roots.
+writable_roots = ["/Users/amtagrwl/git", "/Volumes/Shared/codex-tmp"]
 # Needed for git fetch/push and glab. Without it a job can diagnose but never
 # publish, which is the exact failure this replaces.
 network_access = true
@@ -189,6 +189,7 @@ realtimeVoiceScreenContextEnabled = true
 keepRemoteControlAwakeWhilePluggedIn = true
 
 [shell_environment_policy.set]
+TMPDIR = "/Volumes/Shared/codex-tmp"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,e13fd947e846d3d306e9249dd3c73d14931b6494803dbafb16cef85e6add9506"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/amtagrwl/.codex"
