@@ -89,6 +89,7 @@ cask "wispr-flow"
 
 # ── Comms / media / vpn ──────────────────────────────────────────────────────
 cask "whatsapp"
+cask "telegram"            # Telegram messaging desktop app
 cask "spotify"
 cask "zoom"                # pkg installer — prompts for sudo (run brew bundle in a TTY)
 cask "openvpn-connect"     # pkg installer — prompts for sudo (run brew bundle in a TTY)
